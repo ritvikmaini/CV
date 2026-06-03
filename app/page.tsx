@@ -62,22 +62,47 @@ export default function Home() {
     setOpenSection(section);
   };
 
-  // Persists across re-renders — not reset when activeIndex changes
-  const scrollLocked = useRef(false);
+  // Scroll-state refs persist across re-renders (never reset by setActiveIndex)
+  const wheelAccum  = useRef(0); // accumulated scroll distance toward the next step
+  const lastStepAt  = useRef(0); // timestamp of the last committed step
+  const lastWheelAt = useRef(0); // timestamp of the last wheel event (idle detection)
 
-  // Scroll / keyboard cycles arc without opening panels
+  // Tuning — deliberate but responsive
+  const STEP_THRESHOLD = 80;  // px of accumulated delta to advance one item
+  const STEP_COOLDOWN  = 260; // ms minimum between steps (≈ spring settle time)
+  const IDLE_RESET     = 160; // ms of silence → treat next wheel as a fresh gesture
+
+  // Scroll / swipe / keyboard cycles the arc without opening panels
   useEffect(() => {
     const len = currentItems.length;
 
+    const step = (dir: number) => {
+      setActiveIndex((prev) =>
+        dir > 0 ? Math.min(prev + 1, len - 1) : Math.max(prev - 1, 0)
+      );
+      lastStepAt.current = Date.now();
+      wheelAccum.current = 0; // restart accumulation after each step (deliberate feel)
+    };
+
     const handleWheel = (e: WheelEvent) => {
       if (isAnyOpen) return;
-      if (scrollLocked.current) return; // hard lock until spring settles
-      scrollLocked.current = true;
-      setActiveIndex((prev) =>
-        e.deltaY > 0 ? Math.min(prev + 1, len - 1) : Math.max(prev - 1, 0)
-      );
-      // 700ms gives the spring animation time to settle before next step
-      setTimeout(() => { scrollLocked.current = false; }, 700);
+      const now = Date.now();
+
+      // Normalize delta units (Firefox can report lines/pages instead of pixels)
+      let dy = e.deltaY;
+      if (e.deltaMode === 1) dy *= 16;
+      else if (e.deltaMode === 2) dy *= window.innerHeight;
+
+      // Fresh gesture after a pause, or a direction flip → discard stale momentum
+      if (now - lastWheelAt.current > IDLE_RESET) wheelAccum.current = 0;
+      if (wheelAccum.current !== 0 && Math.sign(dy) !== Math.sign(wheelAccum.current))
+        wheelAccum.current = 0;
+      lastWheelAt.current = now;
+
+      wheelAccum.current += dy;
+
+      if (now - lastStepAt.current < STEP_COOLDOWN) return; // one step per cooldown
+      if (Math.abs(wheelAccum.current) >= STEP_THRESHOLD) step(wheelAccum.current);
     };
 
     const handleKey = (e: KeyboardEvent) => {
@@ -91,21 +116,16 @@ export default function Home() {
       else if (e.key === "Escape") { setOpenSection(null); setAboutOpen(false); }
     };
 
-    // Mobile swipe navigation
+    // Mobile: one deliberate swipe = one step (measured at lift)
     let touchStartY = 0;
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
-    };
+    const handleTouchStart = (e: TouchEvent) => { touchStartY = e.touches[0].clientY; };
     const handleTouchEnd = (e: TouchEvent) => {
       if (isAnyOpen) return;
-      if (scrollLocked.current) return;
+      const now = Date.now();
+      if (now - lastStepAt.current < STEP_COOLDOWN) return;
       const delta = touchStartY - e.changedTouches[0].clientY;
-      if (Math.abs(delta) < 40) return;
-      scrollLocked.current = true;
-      setActiveIndex((prev) =>
-        delta > 0 ? Math.min(prev + 1, len - 1) : Math.max(prev - 1, 0)
-      );
-      setTimeout(() => { scrollLocked.current = false; }, 700);
+      if (Math.abs(delta) < 35) return; // ignore taps / tiny drags
+      step(delta);
     };
 
     window.addEventListener("wheel",      handleWheel,      { passive: true });

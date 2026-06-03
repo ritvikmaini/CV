@@ -162,13 +162,26 @@ export default function MobileLayout({
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.3 }}
           className="flex-1 relative overflow-hidden"
+          style={{
+            // Soft fade at the top/bottom so items entering & leaving the zone
+            // read as intentional rather than abruptly clipped.
+            maskImage:
+              "linear-gradient(to bottom, transparent 0%, black 12%, black 86%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, transparent 0%, black 12%, black 86%, transparent 100%)",
+          }}
         >
           {items.map((item, i) => {
             const dist      = i - activeIndex;
             const absDist   = Math.abs(dist);
             const titleSize    = FONT_SIZES[Math.min(absDist, FONT_SIZES.length - 1)];
             const subtitleSize = FONT_SIZES[Math.min(absDist + 2, FONT_SIZES.length - 1)];
-            const yOffset   = dist * 13; // vh per step
+            // Variable anchor: active item drifts from near the top of the zone
+            // (first item) to near the bottom (last), keeping the zone filled and
+            // closing the gap below the nav.
+            const denom     = Math.max(items.length - 1, 1);
+            const anchorVh  = -25 + 35 * (activeIndex / denom);
+            const yOffset   = anchorVh + dist * 11; // vh per step
             const opacity   = absDist > 4 ? 0 : 1;
             const isActive  = i === activeIndex;
 
@@ -179,7 +192,7 @@ export default function MobileLayout({
                 style={{ top: "50%", left: "6vw", right: "6vw" }}
                 initial={false}
                 animate={{ opacity, y: `${yOffset}vh`, x: 0 }}
-                transition={{ type: "spring", stiffness: 120, damping: 22 }}
+                transition={{ type: "spring", stiffness: 170, damping: 26 }}
                 onClick={() => onSelect(i)}
               >
                 <span

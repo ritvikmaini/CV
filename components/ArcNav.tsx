@@ -49,7 +49,12 @@ export default function ArcNav({ items, activeIndex, onSelect, arcKey, variant }
             const absDist      = Math.abs(dist);
             const titleSize    = sizes[Math.min(absDist, sizes.length - 1)];
             const subtitleSize = sizes[Math.min(absDist + 2, sizes.length - 1)];
-            const yOffset      = dist * yStep;
+            // Variable anchor: the active item drifts from above-centre (first item)
+            // to below-centre (last), so the cascade always fills the viewport
+            // instead of leaving one half empty at the ends.
+            const denom        = Math.max(items.length - 1, 1);
+            const anchorVh     = -15 + 30 * (activeIndex / denom);
+            const yOffset      = anchorVh + dist * yStep;
             const opacity      = absDist > 5 ? 0 : 1;
             const isActive     = i === activeIndex;
 
@@ -65,7 +70,7 @@ export default function ArcNav({ items, activeIndex, onSelect, arcKey, variant }
                 }}
                 initial={false}
                 animate={{ opacity, y: `${yOffset}vh`, x: 0, rotate: 0 }}
-                transition={{ type: "spring", stiffness: 120, damping: 22 }}
+                transition={{ type: "spring", stiffness: 170, damping: 26 }}
                 onClick={() => onSelect(i)}
               >
                 {/* Title / role */}
