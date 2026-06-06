@@ -99,31 +99,32 @@ export default function Home() {
   useEffect(() => { handleArcClickRef.current = handleArcClick; });
 
   // Scroll-state refs persist across re-renders (never reset by setActiveIndex)
-  const wheelAccum  = useRef(0);    // accumulated scroll distance toward the next step
-  const lastStepAt  = useRef(0);    // timestamp of the last committed step
-  const lastWheelAt = useRef(0);    // timestamp of the last wheel event (idle detection)
-  const wheelArmed  = useRef(true); // ready to commit a step? (false = swallowing a gesture's tail)
+  const wheelAccum  = useRef(0); // delta accumulated toward the next step (carries over)
+  const lastStepAt  = useRef(0); // timestamp of the last committed step
+  const lastWheelAt = useRef(0); // timestamp of the last wheel event (idle detection)
 
-  // Tuning — the arc is the primary interaction, so this is built around one
-  // intentional gesture = one step, with these levers:
-  const STEP_THRESHOLD = 64;  // px of accumulated delta to commit one step (↓ = lighter)
-  const STEP_COOLDOWN  = 240; // ms floor between steps — anti-jitter + touch cadence
-  const IDLE_RESET     = 130; // ms of silence → a fresh gesture (re-arm, drop momentum)
-  const QUIET_DELTA    = 5;   // |delta| at/below this = the gesture is easing off → re-arm
-  const HOLD_REPEAT    = 500; // ms; a *held* continuous scroll re-steps at this cadence
-                              // so a long drag isn't stuck on one item
+  // The arc is the primary interaction — tuned for a smooth, playful scroll:
+  // a gentle nudge advances one item, a hard flick carries through several.
+  // The leftover delta is NOT zeroed on a step (only the consumed amount is
+  // subtracted), so total travel ≈ scroll distance ÷ STEP_DISTANCE.
+  const STEP_DISTANCE = 90;  // px of delta per single step (↑ = heavier / fewer)
+  const IDLE_RESET    = 130; // ms of silence → fresh gesture (drop leftover momentum)
+  const STEP_INTERVAL = 55;  // ms min between commits — paces a fast burst into a glide
+  const MAX_PER_EVENT = 2;   // most steps a single wheel event may fire (rest come next)
+  const TOUCH_STEP    = 90;  // px of swipe per step on touch (a hard swipe = several)
+  const MAX_TOUCH     = 4;   // cap on steps from one swipe
 
   // Scroll / swipe / keyboard cycles the arc without opening panels
   useEffect(() => {
     const len = currentItems.length;
+    const clamp = (i: number) => Math.max(0, Math.min(len - 1, i));
 
-    const step = (dir: number) => {
-      setActiveIndex((prev) =>
-        dir > 0 ? Math.min(prev + 1, len - 1) : Math.max(prev - 1, 0)
-      );
+    // Advance `count` items in `dir` (±1) in a single render — the spring
+    // then glides (and bounces) straight to the destination.
+    const stepBy = (count: number, dir: number) => {
+      if (count <= 0) return;
+      setActiveIndex((prev) => clamp(prev + dir * count));
       lastStepAt.current = Date.now();
-      wheelAccum.current = 0;      // restart accumulation after each step
-      wheelArmed.current = false;  // swallow the rest of this gesture until it eases
     };
 
     const handleWheel = (e: WheelEvent) => {
@@ -135,37 +136,25 @@ export default function Home() {
       if (e.deltaMode === 1) dy *= 16;
       else if (e.deltaMode === 2) dy *= window.innerHeight;
 
-      // A pause since the last event starts a fresh gesture: drop any leftover
-      // momentum and re-arm so the next push commits immediately.
-      if (now - lastWheelAt.current > IDLE_RESET) {
+      // A pause since the last event starts a fresh gesture; reversing
+      // direction is intentional. Either way, drop the leftover momentum.
+      if (now - lastWheelAt.current > IDLE_RESET) wheelAccum.current = 0;
+      if (wheelAccum.current !== 0 && Math.sign(dy) !== Math.sign(wheelAccum.current))
         wheelAccum.current = 0;
-        wheelArmed.current = true;
-      }
-      // Reversing direction is intentional → reset and re-arm instantly.
-      if (wheelAccum.current !== 0 && Math.sign(dy) !== Math.sign(wheelAccum.current)) {
-        wheelAccum.current = 0;
-        wheelArmed.current = true;
-      }
       lastWheelAt.current = now;
-
-      // After a committed step we're disarmed, swallowing the gesture's tail.
-      // Re-arm when that tail eases off (inertia decays below the quiet floor)
-      // or when a genuinely *held* scroll has run past the repeat cadence —
-      // this is what stops one trackpad flick from skipping several items while
-      // still letting a sustained drag keep moving.
-      if (!wheelArmed.current) {
-        if (Math.abs(dy) <= QUIET_DELTA || now - lastStepAt.current >= HOLD_REPEAT) {
-          wheelArmed.current = true;
-          wheelAccum.current = 0;
-        } else {
-          return; // still mid-gesture inertia — ignore
-        }
-      }
-
       wheelAccum.current += dy;
 
-      if (now - lastStepAt.current < STEP_COOLDOWN) return; // anti-jitter floor
-      if (Math.abs(wheelAccum.current) >= STEP_THRESHOLD) step(wheelAccum.current);
+      if (now - lastStepAt.current < STEP_INTERVAL) return; // pace bursts into a glide
+
+      // Consume the accumulator in STEP_DISTANCE chunks (carry the remainder),
+      // so a gentle nudge yields one step and a hard flick yields several.
+      const dir = Math.sign(wheelAccum.current);
+      let n = 0;
+      while (Math.abs(wheelAccum.current) >= STEP_DISTANCE && n < MAX_PER_EVENT) {
+        wheelAccum.current -= dir * STEP_DISTANCE;
+        n++;
+      }
+      if (n > 0) stepBy(n, dir);
     };
 
     const handleKey = (e: KeyboardEvent) => {
@@ -184,16 +173,18 @@ export default function Home() {
         handleArcClickRef.current(activeIndex);
     };
 
-    // Mobile: one deliberate swipe = one step (measured at lift)
+    // Mobile: swipe distance scales the jump — a flick of one item, a long
+    // hard drag of several (measured at lift).
     let touchStartY = 0;
     const handleTouchStart = (e: TouchEvent) => { touchStartY = e.touches[0].clientY; };
     const handleTouchEnd = (e: TouchEvent) => {
       if (isAnyOpen) return;
       const now = Date.now();
-      if (now - lastStepAt.current < STEP_COOLDOWN) return;
+      if (now - lastStepAt.current < STEP_INTERVAL) return;
       const delta = touchStartY - e.changedTouches[0].clientY;
       if (Math.abs(delta) < 35) return; // ignore taps / tiny drags
-      step(delta);
+      const count = Math.min(MAX_TOUCH, Math.max(1, Math.round(Math.abs(delta) / TOUCH_STEP)));
+      stepBy(count, Math.sign(delta));
     };
 
     window.addEventListener("wheel",      handleWheel,      { passive: true });

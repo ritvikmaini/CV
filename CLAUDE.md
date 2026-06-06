@@ -66,21 +66,22 @@ Two shared layout tricks — **if you touch one component, mirror it in the othe
 
 ### Scrolling: structure & smoothness (`page.tsx` useEffect)
 
-This is the heart of the site's feel. **There is no native page scroll** (`body { overflow: hidden }`); one input gesture = one arc step. Read this before touching anything scroll-related.
+This is the heart of the site's feel. **There is no native page scroll** (`body { overflow: hidden }`); a gentle scroll advances one arc item, a hard flick carries through several. Read this before touching anything scroll-related.
 
-**Model — a delta-accumulator, not per-event stepping.** Wheel `deltaY` accumulates into `wheelAccum` (a `useRef`) until it crosses `STEP_THRESHOLD`, then commits exactly one step and resets to 0. This is what makes a trackpad flick advance one item instead of flying to the bottom.
+**Model — a carry-over delta accumulator (velocity-proportional).** Wheel `deltaY` accumulates into `wheelAccum` (a `useRef`); each whole `STEP_DISTANCE` chunk it contains commits one step, and only the *consumed* amount is subtracted (the remainder carries forward — it is **not** zeroed on a step). So total travel ≈ scroll distance ÷ `STEP_DISTANCE`: a nudge moves one item, a hard flick moves many. Steps are applied via `stepBy(count, dir)` in a single render so the spring glides straight to the destination.
 
-**State must be refs, not state/locals.** `wheelAccum`, `lastStepAt`, `lastWheelAt` are all `useRef`. This is load-bearing: the listener effect re-runs whenever `activeIndex` (and now `arcView`) changes, so any throttle kept in a local/`useState` would be reset on every step — the original bug where one scroll shot to the end. Keep them refs.
+**State must be refs, not state/locals.** `wheelAccum`, `lastStepAt`, `lastWheelAt` are all `useRef`. This is load-bearing: the listener effect re-runs whenever `activeIndex` (and `arcView`) changes, so any throttle kept in a local/`useState` would be reset on every step — the original bug where one scroll shot to the end. Keep them refs.
 
-**Smoothness levers (all in `page.tsx`, documented inline):**
-- `STEP_THRESHOLD` (px, 80) — accumulated delta needed to advance one item. ↑ = heavier/more deliberate, ↓ = lighter/twitchier.
-- `STEP_COOLDOWN` (ms, 260) — minimum time between steps; roughly the spring settle time, so steps don't visually pile up. Hard cap of one step per window.
-- `IDLE_RESET` (ms, 160) — silence longer than this zeroes the accumulator, so a fresh gesture doesn't inherit stale momentum.
+**Feel levers (all in `page.tsx`, documented inline):**
+- `STEP_DISTANCE` (px, 90) — delta consumed per single step. ↑ = heavier / fewer steps, ↓ = lighter / more steps. This is the main "how many items per flick" dial.
+- `STEP_INTERVAL` (ms, 55) — minimum time between commits; paces a fast burst into a visible glide instead of an instant teleport. (Also the touch tap-cooldown.)
+- `MAX_PER_EVENT` (2) — most steps a single wheel event may fire; the rest come from following events, keeping even a huge single delta controlled.
+- `IDLE_RESET` (ms, 130) — silence longer than this drops the leftover accumulator, so a fresh gesture doesn't inherit stale momentum.
 - A **direction flip** (sign of `deltaY` vs `wheelAccum`) also zeroes the accumulator, so reversing is instant.
 - `deltaMode` is normalized (Firefox reports lines/pages, not px → `×16` / `×innerHeight`).
-- The actual glide between positions is the **Framer spring** on each arc item (`stiffness: 170, damping: 26`, mirrored in both arc components) — tune that for the motion feel; tune the constants above for the *input cadence*. The cooldown is intentionally near the spring settle time; if you change one, reconsider the other.
+- The glide + **bounce** between positions is the **Framer spring** on each arc item (`stiffness: 220, damping: 18, mass: 1` — slightly underdamped for a playful overshoot, mirrored in both arc components). Keep the overshoot moderate: a wilder bounce (much lower damping) can transiently shrink the gap between neighbours enough to overlap — the height-aware spacing only guarantees the *steady-state* gap.
 
-**Other inputs share the same `step()`/cooldown:** touch (swipe measured at `touchend`; drags under 35px ignored as taps) and keyboard (arrows step; `Enter`/`Space` activate via a live `handleArcClickRef`; `Escape` closes/exits). All bail early when an overlay is open (`isAnyOpen`).
+**Other inputs:** touch swipe is distance-scaled too (`stepBy(clamp(|delta|/TOUCH_STEP), dir)`, capped at `MAX_TOUCH`; drags under 35px ignored as taps) and keyboard (arrows step one; `Enter`/`Space` activate via a live `handleArcClickRef`; `Escape` closes/exits). All bail early when an overlay is open (`isAnyOpen`).
 
 ### Overlays
 

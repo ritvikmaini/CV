@@ -143,7 +143,7 @@ export default function ArcNav({ items, activeIndex, onSelect, arcKey, variant }
                 }}
                 initial={false}
                 animate={{ opacity, y: `${yOffset}vh`, x: 0, rotate: 0 }}
-                transition={{ type: "spring", stiffness: 170, damping: 26 }}
+                transition={{ type: "spring", stiffness: 220, damping: 18, mass: 1 }}
                 onClick={() => onSelect(i)}
               >
                 {/* Title / role */}
