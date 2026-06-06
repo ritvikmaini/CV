@@ -1,25 +1,20 @@
 "use client";
 import { motion } from "framer-motion";
+import { profile, sections } from "@/lib/content";
 
 interface HeroNameProps {
+  onHome: () => void;
   onAbout: () => void;
   onNavigate: (section: string) => void;
-  arcMode: "experience" | "projects";
+  arcView: "sections" | "experience" | "projects";
+  showNav: boolean;
 }
 
-const NAME     = "RITVIK MAINI";
-const ROLE     = "AI Engineer";
-const LOCATION = "Darmstadt, Germany";
+const NAME     = profile.name;
+const ROLE     = profile.role;
+const LOCATION = profile.location;
 
-const NAV = [
-  { label: "about",      section: "about" },
-  { label: "education",  section: "education" },
-  { label: "experience", section: "experience" },
-  { label: "projects",   section: "projects" },
-  { label: "skills",     section: "skills" },
-];
-
-export default function HeroName({ onAbout, onNavigate, arcMode }: HeroNameProps) {
+export default function HeroName({ onHome, onAbout, onNavigate, arcView, showNav }: HeroNameProps) {
   return (
     <>
       {/* Big name — desktop only */}
@@ -35,8 +30,10 @@ export default function HeroName({ onAbout, onNavigate, arcMode }: HeroNameProps
           }}
         >
           <h1
-            className="font-black text-black leading-[0.85] tracking-tighter uppercase"
+            onClick={onHome}
+            className="font-display font-black text-black leading-[0.85] tracking-tighter uppercase cursor-pointer hover:opacity-80 transition-opacity"
             style={{ fontSize: "clamp(4rem, 8vw, 7.5rem)" }}
+            title="Back to top"
           >
             {NAME.split(" ").map((word, i) => (
               <div key={i}>{word}</div>
@@ -66,45 +63,47 @@ export default function HeroName({ onAbout, onNavigate, arcMode }: HeroNameProps
           {ROLE}
         </p>
         <p
-          className="text-black/60"
+          className="mono-label text-black/55"
           style={{
-            fontSize: "clamp(0.65rem, 1vw, 1.1rem)",
+            fontSize: "clamp(0.6rem, 0.85vw, 0.9rem)",
             marginBottom: "clamp(0.5rem, 1vh, 1rem)",
           }}
         >
           {LOCATION}
         </p>
 
-        {/* Navigation links */}
-        <div className="flex items-center flex-wrap" style={{ gap: "clamp(0.5rem, 1vw, 1rem)" }}>
-          {NAV.map((item, i) => (
-            <span key={item.section} className="flex items-center" style={{ gap: "clamp(0.5rem, 1vw, 1rem)" }}>
-              {i > 0 && (
-                <span className="text-black/30" style={{ fontSize: "clamp(0.65rem, 1vw, 1.1rem)" }}>
-                  |
-                </span>
-              )}
-              <button
-                onClick={() => item.section === "about" ? onAbout() : onNavigate(item.section)}
-                className={`transition-colors ${
-                  item.section === arcMode
-                    ? "text-black"
-                    : "text-black/70 hover:text-black link-underline"
-                }`}
-                style={{
-                  fontSize: "clamp(0.65rem, 1vw, 1.1rem)",
-                  ...(item.section === arcMode && {
-                    textDecoration: "underline",
-                    textDecorationThickness: "1px",
-                    textUnderlineOffset: "3px",
-                  }),
-                }}
-              >
-                {item.label}
-              </button>
-            </span>
-          ))}
-        </div>
+        {/* Navigation links — only while drilled into a branch */}
+        {showNav && (
+          <div className="flex items-center flex-wrap" style={{ gap: "clamp(0.5rem, 1vw, 1rem)" }}>
+            {sections.map((item, i) => (
+              <span key={item.id} className="flex items-center" style={{ gap: "clamp(0.5rem, 1vw, 1rem)" }}>
+                {i > 0 && (
+                  <span className="text-black/30" style={{ fontSize: "clamp(0.65rem, 1vw, 1.1rem)" }}>
+                    |
+                  </span>
+                )}
+                <button
+                  onClick={() => item.id === "about" ? onAbout() : onNavigate(item.id)}
+                  className={`font-mono uppercase tracking-wider transition-colors ${
+                    item.id === arcView
+                      ? "text-black"
+                      : "text-black/60 hover:text-black link-underline"
+                  }`}
+                  style={{
+                    fontSize: "clamp(0.6rem, 0.85vw, 0.9rem)",
+                    ...(item.id === arcView && {
+                      textDecoration: "underline",
+                      textDecorationThickness: "1px",
+                      textUnderlineOffset: "3px",
+                    }),
+                  }}
+                >
+                  {item.label}
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
       </motion.div>
     </>
   );

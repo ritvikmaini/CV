@@ -1,5 +1,25 @@
 @import "tailwindcss";
 
+/* Map the next/font CSS variables to Tailwind v4 font utilities, so
+   `font-display`, `font-sans`, and `font-mono` resolve to the loaded
+   faces. The next/font variables (--font-archivo, …) are set on <html>. */
+@theme {
+  --font-display: var(--font-archivo), system-ui, sans-serif;
+  --font-sans: var(--font-hanken), system-ui, sans-serif;
+  --font-mono: var(--font-jbmono), ui-monospace, "SFMono-Regular", monospace;
+}
+
+/* Palette — single source for the electric-blue identity + its depth. */
+:root {
+  --blue: #4801ff;
+  --ink: #08070f;
+  /* Accent — chartreuse, the color-wheel complement of the violet-blue
+     brand. Used ONLY inside the dark overlays (eyebrows, link hovers,
+     markers); the blue home stays a strict black/white composition, so
+     the accent never has to fight the saturated background. */
+  --accent: #c7f24d;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -8,6 +28,30 @@
 
 body {
   overflow: hidden;
+  background: var(--blue);
+  font-family: var(--font-sans);
+}
+
+/* ── Atmosphere ────────────────────────────────────────────────────
+   The home field is the flat brand blue (a visible gradient here read as
+   a generic hero). Depth comes only from the fine grain overlay below and
+   the constellation canvas — a matte, printed quality, not a digital fill.
+   The richer purple→black gradient is reserved for the detail overlays. */
+.app-bg {
+  background: var(--blue);
+}
+
+/* Fine film grain — fixed, non-interactive, blended over everything but
+   the foreground content. Low opacity keeps it a texture, not noise. */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
 }
 
 .link-underline {
@@ -29,7 +73,44 @@ body {
   width: 100%;
 }
 
+/* Small mono label — eyebrows, technical metadata, menus. */
+.mono-label {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
 .modal-overlay {
-  background: rgba(10, 10, 20, 0.95);
-  backdrop-filter: blur(12px);
+  background:
+    radial-gradient(120% 90% at 85% -10%, rgba(46, 0, 158, 0.55) 0%, rgba(8, 7, 15, 0) 55%),
+    rgba(8, 7, 15, 0.96);
+  backdrop-filter: blur(14px);
+}
+
+/* Shared buffer for every detail page so content never touches the edges.
+   The top buffer is deep enough that long titles always clear the close (X),
+   which is parked inside that same top buffer. */
+.detail-page {
+  padding-top: clamp(5rem, 12vh, 8rem);
+  padding-left: clamp(1.5rem, 5vw, 4rem);
+  padding-right: clamp(1.5rem, 5vw, 4rem);
+  padding-bottom: clamp(4rem, 10vh, 7rem);
+}
+
+.detail-close {
+  position: fixed;
+  top: clamp(1.5rem, 4vh, 2.5rem);
+  right: clamp(1.5rem, 5vw, 4rem);
+}
+
+/* Respect users who ask for less motion: neutralise CSS transitions and
+   animations. (The canvas drift is gated separately in DotCanvas.) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

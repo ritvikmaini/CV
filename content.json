@@ -1,0 +1,203 @@
+{
+  "profile": {
+    "name": "RITVIK MAINI",
+    "role": "AI Engineer studying AI & ML at TU Darmstadt",
+    "location": "Darmstadt, Germany",
+    "email": "mainiritvik@gmail.com",
+    "links": {
+      "linkedin": "https://ritvikmaini.com/linkedin?ref=profile",
+      "github": "http://ritvikmaini.com/github?ref=profile",
+      "resume": "/resume.pdf"
+    }
+  },
+
+  "sections": [
+    { "id": "about", "label": "about" },
+    { "id": "education", "label": "education" },
+    { "id": "experience", "label": "experience" },
+    { "id": "projects", "label": "projects" },
+    { "id": "skills", "label": "skills" }
+  ],
+
+  "about": {
+    "bio": "Building,growing and consistently learning",
+    "languages": ["English (Native)", "German (C2)","Hindi (Native)"]
+  },
+
+  "education": [
+    {
+      "degree": "MSc. Informatik - AI and Machine Learning",
+      "school": "Technical University of Darmstadt",
+      "period": "April 2025 - Present",
+      "focus": ""
+    },
+    {
+      "degree": "BSc. Informatik",
+      "school": "Darmstadt University of Applied Sciences (h_da)",
+      "period": "October 2020 - March 2025",
+      "focus": "Thesis: Unsupervised Face Embedding Clustering for Model Identity Recognition (Nominee, H_DA Dissertation of the Year, 2025)"
+    },
+    {
+      "degree": "Foundation Year (Studienkolleg) - Informatik",
+      "school": "Karlsruhe Institute of Technology (KIT)",
+      "period": "October 2018 - July 2020",
+      "focus": ""
+    },
+    {
+      "degree": "Secondary High School",
+      "school": "Shri Ram School Aravali, New Delhi",
+      "period": "February 2004 - March 2018",
+      "focus": ""
+    }
+  ],
+
+  "skills": [
+    {
+      "label": "Forecasting & ML",
+      "items": [
+        "LightGBM", "PyTorch", "TensorFlow", "Scikit-learn",
+        "Time-Series Forecasting", "Foundation Models",
+        "Ensemble & Statistical Methods", "Exploratory Data Analysis",
+        "LLMs & RAG", "OpenCV"
+      ]
+    },
+    {
+      "label": "Data & Infrastructure",
+      "items": [
+        "Apache Airflow", "PostgreSQL",
+        "AWS (Lambda, S3, DynamoDB)",
+        "GCP (BigQuery, Cloud Functions, Cloud Storage, Vertex AI)",
+        "Docker", "Data Pipeline & ETL Design"
+      ]
+    },
+    {
+      "label": "Languages & Tools",
+      "items": [
+        "Python", "SQL", "C++", "Git", "REST APIs",
+        "Pandas", "Pydantic", "Playwright", "Agile (Scrum)"
+      ]
+    }
+  ],
+
+  "experience": [
+    {
+      "label": "AI Engineer",
+      "company": "Bavest",
+      "period": "November 2025 - July 2026",
+      "location": "Frankfurt, Germany",
+      "highlights": [
+        "When I joined Bavest, the company provided financial data and analytics products to financial institutions. My primary responsibility was building a new capability: forecasting future company performance rather than only reporting historical data.",
+        "I designed and developed Bavest's first machine-learning forecasting platform for fundamental financial metrics such as earnings per share, EBITDA, and EBIT. The project covered the entire forecasting stack: point-in-time feature engineering, model development, historical backtesting, evaluation methodology, experimentation infrastructure, and production deployment. The system was benchmarked against analyst consensus across thousands of historical observations, produces forecasts even for companies that analysts do not cover, and became the foundation for Bavest's forecasting products.",
+        "Alongside the forecasting platform, I owned several production data systems that formed part of the company's core infrastructure: a macroeconomic data platform integrating official sources across multiple countries, a financial-metrics engine serving more than 100 analytics metrics through customer-facing APIs, and components of the firm's ETF data platform.",
+        "The work spanned machine-learning research, data engineering, and product development in a small team, with end-to-end ownership from experimentation through production operation."
+      ]
+    },
+    {
+      "label": "Werkstudent AI, Automation & E-Commerce",
+      "company": "TB International GmbH",
+      "period": "October 2022 – November 2025",
+      "location": "Ober Ramstadt, Germany",
+      "highlights": [
+        "TODO: Key achievement or responsibility.",
+        "TODO: Key achievement or responsibility."
+      ]
+    },
+    {
+      "label": "Industry Project",
+      "company": "Darmstadt University of Applied Sciences",
+      "period": "July 2024 - October 2024",
+      "location": "Darmstadt, Germany",
+      "highlights": [
+        "Developed an AI-driven cybersecurity training platform for the State of Hessen with adaptive learning paths and chatbot-based training. (Led by Prof. Dr. Massoth)"
+      ]
+    },
+    {
+      "label": "Intercultural Tutor",
+      "company": "Studierendenwerk Darmstadt",
+      "period": "October 2022 - March 2024",
+      "location": "Darmstadt, Germany",
+      "highlights": [
+        "Mentored international students through cultural integration, academic support, translation and event coordination."
+      ]
+    },
+    {
+      "label": "Intern",
+      "company": "Maruti Suzuki",
+      "period": "April 2021 – June 2021",
+      "location": "New Delhi, India",
+      "highlights": [
+        "Built an object recognition system on production line CCTV for real-time COVID safety monitoring, in collaboration with Xane AI.​​​​​​​​​​​​​​​​"
+      ]
+    },
+    {
+      "label": "Web Development Intern",
+      "company": "Webmentix GmbH",
+      "period": "August 2020 – October 2020",
+      "location": "Karlsruhe, Germany",
+      "highlights": [
+        "Designed and deployed a website for Lasya Priya Dance Institute."
+      ],
+      "link":"https://www.lasyapriya.de"
+    }
+  ],
+
+  "projects": [
+    {
+      "label": "Automated Image Cropping Pipeline (GCP)",
+      "description": "TODO: What it does and why it matters.",
+      "period": "TODO: Year",
+      "stack": ["TODO", "TODO"],
+      "link": ""
+    },
+    {
+      "label": "Unsupervised Face Clustering for Identity Grouping",
+      "description": "TODO: What it does and why it matters.",
+      "period": "TODO: Year",
+      "stack": ["TODO", "TODO"],
+      "link": ""
+    },
+    {
+      "label": "AI Apparel Image Generation",
+      "description": "TODO: What it does and why it matters.",
+      "period": "TODO: Year",
+      "stack": ["TODO", "TODO"],
+      "link": ""
+    },
+    {
+      "label": "LLM Product Description Generator",
+      "description": "TODO: What it does and why it matters.",
+      "period": "TODO: Year",
+      "stack": ["TODO", "TODO"],
+      "link": ""
+    },
+    {
+      "label": "Touch-recognition",
+      "description": "TODO: What it does and why it matters.",
+      "period": "TODO: Year",
+      "stack": ["TODO", "TODO"],
+      "link": ""
+    },
+    {
+      "label": "Kaggle Challenges",
+      "description": "TODO: optional intro line about your Kaggle work (or remove this field).",
+      "entries": [
+        {
+          "name": "Titanic - Machine Learning from Disaster",
+          "accuracy": "Cross-validated accuracy: 0.851",
+          "description": "A stacking ensemble pipeline for the Kaggle Titanic competition, built around leak-free feature engineering (leave-one-out group survival encoding, data-driven K-means groupings) and Bayesian hyperparameter tuning across six diverse base learners — near the practical ML ceiling for this dataset.",
+          "links": [
+            { "label": "GitHub", "href": "https://github.com/ritvikmaini/Titanic-Classification" }
+          ]
+        },
+        {
+          "name": "TODO: Challenge name",
+          "accuracy": "TODO: Accuracy 0.000",
+          "description": "TODO: optional short description (or remove this field).",
+          "links": [
+            { "label": "Notebook", "href": "https://www.kaggle.com/..." }
+          ]
+        }
+      ]
+    }
+  ]
+}

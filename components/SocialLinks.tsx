@@ -1,16 +1,12 @@
 "use client";
 import { motion } from "framer-motion";
-
-const EMAIL    = "mainiritvik@gmail.com";
-const LINKEDIN = "https://ritvikmaini.com/linkedin?ref=profile";
-const GITHUB   = "http://ritvikmaini.com/github?ref=profile";
-const RESUME   = "/resume.pdf";
+import { profile } from "@/lib/content";
 
 const LINKS = [
-  { label: "Email",    href: `mailto:${EMAIL}`,  external: false },
-  { label: "LinkedIn", href: LINKEDIN,            external: true  },
-  { label: "GitHub",   href: GITHUB,              external: true  },
-  { label: "Resume",   href: RESUME,              external: true  },
+  { label: "Email",    href: `mailto:${profile.email}`, external: false },
+  { label: "LinkedIn", href: profile.links.linkedin,    external: true  },
+  { label: "GitHub",   href: profile.links.github,      external: true  },
+  { label: "Resume",   href: profile.links.resume,      external: true  },
 ];
 
 export default function SocialLinks() {
@@ -36,8 +32,8 @@ export default function SocialLinks() {
           <a
             href={link.href}
             {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-            className="text-black/80 hover:text-black transition-colors link-underline"
-            style={{ fontSize: "clamp(0.75rem, 1.2vw, 1.25rem)" }}
+            className="font-mono uppercase tracking-wider text-black/70 hover:text-black transition-colors link-underline"
+            style={{ fontSize: "clamp(0.65rem, 1vw, 1rem)" }}
           >
             {link.label}
           </a>

@@ -52,7 +52,7 @@ export default function DotCanvas() {
     const ctx = canvas.getContext("2d")!;
 
     const mouse = { x: -9999, y: -9999 };
-    let rafId: number;
+    let rafId = 0;
     let nodes: Node[] = [];
 
     const init = () => {
@@ -157,6 +157,17 @@ export default function DotCanvas() {
     };
 
     init();
+
+    // Honour reduced-motion: render one static constellation, skip the loop
+    // and the cursor-repel interactions entirely.
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) {
+      animate();
+      cancelAnimationFrame(rafId);
+      window.addEventListener("resize", () => { init(); animate(); cancelAnimationFrame(rafId); });
+      return () => window.removeEventListener("resize", init);
+    }
+
     animate();
     window.addEventListener("resize", init);
     window.addEventListener("mousemove", onMouseMove);

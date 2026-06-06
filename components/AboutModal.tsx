@@ -1,27 +1,23 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
+import { about, profile, education, sectionLabel } from "@/lib/content";
 
 interface AboutModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// TODO: fill in your real content
-const BIO =
-  "Software Engineer with experience building [describe your work here]. Passionate about [your interests].";
+const BIO = about.bio;
 
-const EDUCATION = {
-  degree: "B.S. Computer Science",
-  school: "[Your University]",
-  year: "[Graduation Year]",
-};
+// Most recent education entry — single source from the education section
+const LATEST_EDUCATION = education[0];
 
 const CONTACT = {
-  email: "mainiritvik@gmail.com",
-  location: "Darmstadt, Germany",
+  email: profile.email,
+  location: profile.location,
 };
 
-const LANGUAGES_SPOKEN = ["English (Native)", "Hindi (Native)"];
+const LANGUAGES_SPOKEN = about.languages;
 
 export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
   return (
@@ -41,7 +37,7 @@ export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.3, delay: 0.2 }}
             onClick={onClose}
-            className="fixed top-8 right-8 z-[101] text-white hover:text-white/70 transition-colors"
+            className="detail-close z-[101] text-white hover:text-[var(--accent)] transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +54,7 @@ export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
             </svg>
           </motion.button>
 
-          <div className="min-h-screen px-8 py-24 md:px-16">
+          <div className="min-h-screen detail-page">
             <div className="max-w-6xl mx-auto">
               {/* Heading */}
               <motion.div
@@ -67,8 +63,9 @@ export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 className="mb-16"
               >
-                <h2 className="font-black text-5xl md:text-7xl text-white mb-6 uppercase tracking-tighter">
-                  ABOUT
+                <p className="mono-label text-[var(--accent)] text-xs mb-3">{`// ${profile.name}`}</p>
+                <h2 className="font-display font-black text-5xl md:text-7xl text-white mb-6 uppercase tracking-tighter leading-[0.9]">
+                  {sectionLabel("about")}
                 </h2>
                 <p className="text-lg md:text-xl text-white/80 max-w-3xl leading-relaxed">
                   {BIO}
@@ -82,13 +79,13 @@ export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  <h3 className="font-black text-xl text-white mb-4 border-b border-white/20 pb-2 uppercase tracking-wider">
+                  <h3 className="mono-label text-sm text-white/70 mb-4 border-b border-white/20 pb-2">
                     Education
                   </h3>
                   <div className="space-y-2">
-                    <p className="text-white font-medium">{EDUCATION.degree}</p>
-                    <p className="text-white/70">{EDUCATION.school}</p>
-                    <p className="text-white/50 text-sm">{EDUCATION.year}</p>
+                    <p className="text-white font-medium">{LATEST_EDUCATION.degree}</p>
+                    <p className="text-white/70">{LATEST_EDUCATION.school}</p>
+                    <p className="mono-label text-white/45 text-xs mt-1">{LATEST_EDUCATION.period}</p>
                   </div>
                 </motion.div>
 
@@ -98,29 +95,29 @@ export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
                 >
-                  <h3 className="font-black text-xl text-white mb-4 border-b border-white/20 pb-2 uppercase tracking-wider">
+                  <h3 className="mono-label text-sm text-white/70 mb-4 border-b border-white/20 pb-2">
                     Contact
                   </h3>
                   <div className="space-y-4">
                     <div>
-                      <p className="text-white/60 text-xs uppercase tracking-wider mb-1">
+                      <p className="mono-label text-white/50 text-xs mb-1">
                         Email
                       </p>
                       <a
                         href={`mailto:${CONTACT.email}`}
-                        className="text-white hover:text-white/70 transition-colors link-underline"
+                        className="text-white hover:text-[var(--accent)] transition-colors link-underline"
                       >
                         {CONTACT.email}
                       </a>
                     </div>
                     <div>
-                      <p className="text-white/60 text-xs uppercase tracking-wider mb-1">
+                      <p className="mono-label text-white/50 text-xs mb-1">
                         Location
                       </p>
                       <p className="text-white/80">{CONTACT.location}</p>
                     </div>
                     <div className="mt-6 pt-4 border-t border-white/10">
-                      <p className="text-white/60 text-xs uppercase tracking-wider mb-2">
+                      <p className="mono-label text-white/50 text-xs mb-2">
                         Languages
                       </p>
                       <div className="space-y-1">
