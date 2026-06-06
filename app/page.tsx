@@ -98,21 +98,26 @@ export default function Home() {
   const handleArcClickRef = useRef(handleArcClick);
   useEffect(() => { handleArcClickRef.current = handleArcClick; });
 
-  // Scroll-state refs persist across re-renders (never reset by setActiveIndex)
+  // Scroll-state refs persist across re-renders (never reset by setActiveIndex).
+  // The touch refs are load-bearing for live dragging: the scroll effect
+  // re-runs on every step (activeIndex change), so any per-gesture state kept
+  // in a local/useState would reset mid-drag and the next move would jump.
   const wheelAccum  = useRef(0); // delta accumulated toward the next step (carries over)
   const lastStepAt  = useRef(0); // timestamp of the last committed step
   const lastWheelAt = useRef(0); // timestamp of the last wheel event (idle detection)
+  const touchAccum  = useRef(0); // finger travel accumulated toward the next step
+  const touchLastY  = useRef(0); // last touch Y, for per-move deltas (live dragging)
 
   // The arc is the primary interaction — tuned for a smooth, playful scroll:
   // a gentle nudge advances one item, a hard flick carries through several.
   // The leftover delta is NOT zeroed on a step (only the consumed amount is
   // subtracted), so total travel ≈ scroll distance ÷ STEP_DISTANCE.
-  const STEP_DISTANCE = 90;  // px of delta per single step (↑ = heavier / fewer)
+  const STEP_DISTANCE = 90;  // px of wheel delta per step (↑ = heavier / fewer)
   const IDLE_RESET    = 130; // ms of silence → fresh gesture (drop leftover momentum)
   const STEP_INTERVAL = 55;  // ms min between commits — paces a fast burst into a glide
-  const MAX_PER_EVENT = 2;   // most steps a single wheel event may fire (rest come next)
-  const TOUCH_STEP    = 90;  // px of swipe per step on touch (a hard swipe = several)
-  const MAX_TOUCH     = 4;   // cap on steps from one swipe
+  const MAX_PER_EVENT = 2;   // most steps a single input event may fire (rest come next)
+  const TOUCH_STEP    = 120; // px of finger travel per step — stepped LIVE during a drag,
+                             // so a normal swipe ≈ one item and you see each step happen
 
   // Scroll / swipe / keyboard cycles the arc without opening panels
   useEffect(() => {
@@ -173,28 +178,44 @@ export default function Home() {
         handleArcClickRef.current(activeIndex);
     };
 
-    // Mobile: swipe distance scales the jump — a flick of one item, a long
-    // hard drag of several (measured at lift).
-    let touchStartY = 0;
-    const handleTouchStart = (e: TouchEvent) => { touchStartY = e.touches[0].clientY; };
-    const handleTouchEnd = (e: TouchEvent) => {
-      if (isAnyOpen) return;
-      const now = Date.now();
-      if (now - lastStepAt.current < STEP_INTERVAL) return;
-      const delta = touchStartY - e.changedTouches[0].clientY;
-      if (Math.abs(delta) < 35) return; // ignore taps / tiny drags
-      const count = Math.min(MAX_TOUCH, Math.max(1, Math.round(Math.abs(delta) / TOUCH_STEP)));
-      stepBy(count, Math.sign(delta));
+    // Mobile: step LIVE as the finger moves (not at lift), so the arc tracks
+    // the drag. Each TOUCH_STEP of travel commits one step and carries the
+    // remainder — a normal swipe advances one item, a long drag several, with
+    // each step visible mid-drag so it never overshoots by surprise.
+    const handleTouchStart = (e: TouchEvent) => {
+      touchLastY.current = e.touches[0].clientY;
+      touchAccum.current = 0;
     };
+    const handleTouchMove = (e: TouchEvent) => {
+      if (isAnyOpen) return;
+      const y = e.touches[0].clientY;
+      const dy = touchLastY.current - y; // finger up → positive → advance forward
+      touchLastY.current = y;
+      // Reversing direction is intentional → reset for an instant flip.
+      if (touchAccum.current !== 0 && Math.sign(dy) !== Math.sign(touchAccum.current))
+        touchAccum.current = 0;
+      touchAccum.current += dy;
+
+      const dir = Math.sign(touchAccum.current);
+      let n = 0;
+      while (Math.abs(touchAccum.current) >= TOUCH_STEP && n < MAX_PER_EVENT) {
+        touchAccum.current -= dir * TOUCH_STEP;
+        n++;
+      }
+      if (n > 0) stepBy(n, dir);
+    };
+    const handleTouchEnd = () => { touchAccum.current = 0; };
 
     window.addEventListener("wheel",      handleWheel,      { passive: true });
     window.addEventListener("keydown",    handleKey);
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove",  handleTouchMove,  { passive: true });
     window.addEventListener("touchend",   handleTouchEnd);
     return () => {
       window.removeEventListener("wheel",      handleWheel);
       window.removeEventListener("keydown",    handleKey);
       window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove",  handleTouchMove);
       window.removeEventListener("touchend",   handleTouchEnd);
     };
   }, [isAnyOpen, activeIndex, currentItems, arcView]);

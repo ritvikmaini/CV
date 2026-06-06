@@ -81,7 +81,7 @@ This is the heart of the site's feel. **There is no native page scroll** (`body 
 - `deltaMode` is normalized (Firefox reports lines/pages, not px → `×16` / `×innerHeight`).
 - The glide + **bounce** between positions is the **Framer spring** on each arc item (`stiffness: 220, damping: 18, mass: 1` — slightly underdamped for a playful overshoot, mirrored in both arc components). Keep the overshoot moderate: a wilder bounce (much lower damping) can transiently shrink the gap between neighbours enough to overlap — the height-aware spacing only guarantees the *steady-state* gap.
 
-**Other inputs:** touch swipe is distance-scaled too (`stepBy(clamp(|delta|/TOUCH_STEP), dir)`, capped at `MAX_TOUCH`; drags under 35px ignored as taps) and keyboard (arrows step one; `Enter`/`Space` activate via a live `handleArcClickRef`; `Escape` closes/exits). All bail early when an overlay is open (`isAnyOpen`).
+**Touch is stepped LIVE during the drag** (in `touchmove`, not at `touchend`), so the arc tracks the finger as it moves. Each `TOUCH_STEP` (px, 120) of travel commits one step and carries the remainder — a normal swipe ≈ one item, a long drag several. `touchAccum`/`touchLastY` **must be refs** (the effect re-runs on every step; a local would reset mid-drag → next move jumps). The mobile container sets `touch-action: none` so the browser's pan/overscroll doesn't fight the drag (taps still fire). **Keyboard:** arrows step one; `Enter`/`Space` activate via a live `handleArcClickRef`; `Escape` closes/exits. All inputs bail early when an overlay is open (`isAnyOpen`).
 
 ### Overlays
 

@@ -129,7 +129,12 @@ export default function MobileLayout({
   }
 
   return (
-    <div className="fixed inset-0 md:hidden flex flex-col z-20 overflow-hidden">
+    <div
+      className="fixed inset-0 md:hidden flex flex-col z-20 overflow-hidden"
+      // Let our touchmove handler fully own the gesture (no browser
+      // pan/overscroll fighting the live drag); taps still fire.
+      style={{ touchAction: "none" }}
+    >
 
       {/* ── Top info section ── */}
       <motion.div
