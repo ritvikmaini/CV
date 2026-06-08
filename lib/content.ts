@@ -47,6 +47,10 @@ export interface ExperienceEntry {
   period: string;
   location: string;
   highlights: string[];
+  /** Optional external link shown under the highlights. */
+  link?: string;
+  /** Display text for `link` (defaults to "Visit →"). */
+  linkLabel?: string;
 }
 
 export interface ProjectLink {
@@ -60,6 +64,8 @@ export interface ProjectChallenge {
   /** Shown in the small "period" font — use it for accuracy/score. */
   accuracy?: string;
   description?: string;
+  /** Free-text tech/techniques line (a string, not the project-level array). */
+  stack?: string;
   links?: ProjectLink[];
 }
 

@@ -171,6 +171,17 @@ function ExperienceEntryContent({ slug }: { slug: string }) {
             ))}
           </div>
         )}
+        {entry.link && (
+          <a
+            href={entry.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block text-white/50 text-sm hover:text-[var(--accent)] transition-colors link-underline"
+            style={{ marginTop: "1rem" }}
+          >
+            {entry.linkLabel ?? "Visit →"}
+          </a>
+        )}
       </motion.div>
     </>
   );
@@ -257,6 +268,22 @@ function ProjectEntryContent({ slug }: { slug: string }) {
                   <p className="text-white/70 text-base leading-relaxed max-w-3xl" style={{ marginTop: "0.5rem" }}>
                     {c.description}
                   </p>
+                )}
+                {c.stack && (
+                  <div className="flex flex-wrap gap-2 max-w-3xl" style={{ marginTop: "0.7rem" }}>
+                    {c.stack
+                      .split(",")
+                      .map((s) => s.trim())
+                      .filter(Boolean)
+                      .map((s, j) => (
+                        <span
+                          key={j}
+                          className="font-mono px-3 py-1.5 text-xs text-white/75 border border-white/12 rounded-full"
+                        >
+                          {s}
+                        </span>
+                      ))}
+                  </div>
                 )}
                 {c.links && c.links.length > 0 && (
                   <div className="flex flex-wrap items-center" style={{ gap: "0.75rem", marginTop: "0.5rem" }}>

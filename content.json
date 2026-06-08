@@ -54,28 +54,50 @@
 
   "skills": [
     {
-      "label": "Forecasting & ML",
+      "label": "Machine Learning & Modeling",
       "items": [
-        "LightGBM", "PyTorch", "TensorFlow", "Scikit-learn",
-        "Time-Series Forecasting", "Foundation Models",
-        "Ensemble & Statistical Methods", "Exploratory Data Analysis",
-        "LLMs & RAG", "OpenCV"
+        "scikit-learn", "PyTorch", "TensorFlow", "LightGBM", "XGBoost",
+        "CatBoost", "Optuna", "SHAP", "hdbscan",
+        "Time-Series Forecasting", "Foundation Models", "TiRex / tirex-ts",
+        "Ensemble & Statistical Methods", "Stacking Ensembles",
+        "Out-of-Fold Cross-Validation", "Gaussian Process Regression",
+        "Kernel Ridge", "PLS", "Linear Regression", "Ridge", "Lasso",
+        "ElasticNet", "Random Forest", "Gradient Boosting",
+        "HistGradient Boosting", "UMAP", "PCA",
+        "Leave-One-Out Target Encoding", "K-Means Feature Grouping",
+        "Log-Target Transform", "Spectral Preprocessing (Savitzky-Golay / SNV / MSC)",
+        "Exploratory Data Analysis"
       ]
     },
     {
-      "label": "Data & Infrastructure",
+      "label": "Generative AI & LLMs",
       "items": [
-        "Apache Airflow", "PostgreSQL",
-        "AWS (Lambda, S3, DynamoDB)",
-        "GCP (BigQuery, Cloud Functions, Cloud Storage, Vertex AI)",
-        "Docker", "Data Pipeline & ETL Design"
+        "OpenAI Responses API", "OpenAI gpt-image-1", "LLMs & RAG", "Pydantic"
       ]
     },
     {
-      "label": "Languages & Tools",
+      "label": "Computer Vision",
       "items": [
-        "Python", "SQL", "C++", "Git", "REST APIs",
-        "Pandas", "Pydantic", "Playwright", "Agile (Scrum)"
+        "OpenCV", "InsightFace / ArcFace", "MediaPipe Pose",
+        "Google Cloud Vision", "Pillow", "rembg"
+      ]
+    },
+    {
+      "label": "Data, Cloud & Infrastructure",
+      "items": [
+        "BigQuery", "DuckDB", "PostgreSQL", "Cloud Storage",
+        "Cloud Functions (Gen2)", "Secret Manager", "Vertex AI",
+        "AWS (Lambda, S3, DynamoDB)", "Apache Airflow", "Docker",
+        "Data Pipeline & ETL Design", "SEC EDGAR XBRL", "yfinance", "FRED",
+        "SAP Business One", "Pimcore", "Power BI"
+      ]
+    },
+    {
+      "label": "Languages, Libraries & Tools",
+      "items": [
+        "Python", "SQL", "C++", "pandas", "NumPy", "SciPy", "Matplotlib",
+        "seaborn", "Jupyter", "Git", "REST APIs", "pytest", "tenacity",
+        "Playwright", "TUIO/OSC", "Agile (Scrum)"
       ]
     }
   ],
@@ -94,13 +116,15 @@
       ]
     },
     {
-      "label": "Werkstudent AI, Automation & E-Commerce",
+      "label": "Working Student, AI, Automation & E-Commerce",
       "company": "TB International GmbH",
-      "period": "October 2022 – November 2025",
+      "period": "October 2022 - November 2025",
       "location": "Ober Ramstadt, Germany",
       "highlights": [
-        "TODO: Key achievement or responsibility.",
-        "TODO: Key achievement or responsibility."
+        "When I joined TB International, a German fashion e-commerce company with a catalog of 150,000+ SKUs, I started as a working student running the company's three B2B webshops, its core sales channel. The role grew into a cross-functional staff position advising the Head of Digital Operations on automation across the product, content, and data teams.",
+        "I rebuilt how the catalog was operated. A manual process, where publishing or removing a set of articles took up to two weeks, became rule-driven automation that runs daily across three B2B webshops at 200,000+ SKUs, deciding which products go live, which come down, and how the assortment is categorized. I extended the same ownership to studio sample ordering with a stock-aware prioritization algorithm, and built BI dashboards and process mining that gave C-level leadership a single view of catalog health. The automation backbone was later carried over to five B2C webshops and absorbed into the company's core onboarding architecture.",
+        "Alongside operations, I built and ran a portfolio of production AI systems spanning the e-commerce value chain, each replacing manual or external-agency work: multilingual product-description generation, identity resolution across the model image catalog, automated studio image cropping, and generative product packshots.",
+        "Across three years I was the primary engineer and the central point of contact for the webshops, with end-to-end ownership from automation scripts to production AI and decision-support reporting, working across multiple teams to deliver it."
       ]
     },
     {
@@ -109,8 +133,10 @@
       "period": "July 2024 - October 2024",
       "location": "Darmstadt, Germany",
       "highlights": [
-        "Developed an AI-driven cybersecurity training platform for the State of Hessen with adaptive learning paths and chatbot-based training. (Led by Prof. Dr. Massoth)"
-      ]
+        "I was a backend engineer on SecureBot, a research project led by Prof. Dr. Massoth that built an AI-driven cybersecurity training platform for the State of Hessen. I developed backend systems for a platform delivering adaptive learning paths and chatbot-based security coaching to public-sector staff."
+      ],
+      "link": "https://www.forschung-it-sicherheit-kommunikationssysteme.de/projekte/securebot",
+      "linkLabel": "securebot-stadt-hessen ↗"
     },
     {
       "label": "Intercultural Tutor",
@@ -118,27 +144,28 @@
       "period": "October 2022 - March 2024",
       "location": "Darmstadt, Germany",
       "highlights": [
-        "Mentored international students through cultural integration, academic support, translation and event coordination."
+        "I tutored international students at the Studierendenwerk, drawing on my own experience making the same move to Germany. I ran student events, gave academic support, and accompanied students to official appointments to help with translation."
       ]
     },
     {
       "label": "Intern",
       "company": "Maruti Suzuki",
-      "period": "April 2021 – June 2021",
+      "period": "April 2021 - June 2021",
       "location": "New Delhi, India",
       "highlights": [
-        "Built an object recognition system on production line CCTV for real-time COVID safety monitoring, in collaboration with Xane AI.​​​​​​​​​​​​​​​​"
+        "On Maruti Suzuki's MAIL internship program, I wrote my first production Python and computer-vision code. Working closely with the partner startup Xane AI during the height of COVID, I helped build an object-recognition system that monitored the production line over CCTV to enforce safety protocols."
       ]
     },
     {
       "label": "Web Development Intern",
       "company": "Webmentix GmbH",
-      "period": "August 2020 – October 2020",
+      "period": "August 2020 - October 2020",
       "location": "Karlsruhe, Germany",
       "highlights": [
-        "Designed and deployed a website for Lasya Priya Dance Institute."
+        "This was one of my first roles in tech. I learned the fundamentals of web development on WordPress and built and deployed my first website, for the Lasya Priya dance institute."
       ],
-      "link":"https://www.lasyapriya.de"
+      "link": "https://www.lasyapriya.de",
+      "linkLabel": "Lasya Priya Dance Institute ↗"
     }
   ],
 
@@ -216,7 +243,7 @@
 },
     {
     "label": "Touch-recognition",
-    "description": "Real-time multitouch blob tracker that turns a camera feed into TUIO cursor events. Uses an OpenCV pipeline (background subtraction, high-pass thresholding,contour/ellipse fitting) to detect fingertips, tracks them across frames with stable IDs via nearest-neighbor matching, and streams them as TUIO 1.1 cursors over OSC — a drop-in touch source for interactive tables and TUIO-compatible apps.",
+    "description": "Real-time multitouch blob tracker that turns a camera feed into TUIO cursor events. Uses an OpenCV pipeline (background subtraction, high-pass thresholding,contour/ellipse fitting) to detect fingertips, tracks them across frames with stable IDs via nearest-neighbor matching, and streams them as TUIO 1.1 cursors over OSC - a drop-in touch source for interactive tables and TUIO-compatible apps.",
     "period": "2024",
     "stack": ["Python", "OpenCV", "NumPy", "TUIO/OSC"],
     "link": "https://github.com/ritvikmaini/Touch-recognition"
@@ -224,55 +251,52 @@
 
     {
       "label": "Kaggle Challenges",
-      "description": "TODO: optional intro line about your Kaggle work (or remove this field).",
+      "description": "",
       "entries": [
         {
-          "name": "Titanic - Machine Learning from Disaster",
-          "accuracy": "Cross-validated accuracy: 0.851",
-          "description": "A stacking ensemble pipeline for the Kaggle Titanic competition, built around leak-free feature engineering (leave-one-out group survival encoding, data-driven K-means groupings) and Bayesian hyperparameter tuning across six diverse base learners — near the practical ML ceiling for this dataset.",
-          "links": [
-            { "label": "GitHub", "href": "https://github.com/ritvikmaini/Titanic-Classification" }
-          ]
-        },
-        {
-          "name": "Phoneme-Classification",
-          "accuracy": "TODO: Accuracy 0.000",
-          "description": "TODO: optional short description (or remove this field).",
-          "links": [
-            { "label": "Notebook", "href": "https://github.com/ritvikmaini/Phoneme-Classification" }
-          ]
-        },
-        {
-          "name": "Tecator-Meat-Classification",
-          "accuracy": "TODO: Accuracy 0.000",
-          "description": "TODO: optional short description (or remove this field).",
+          "name": "Tecator - Meat Fat Content Regression",
+          "accuracy": "Cross-validated RMSE: 0.74 (R²: 0.996)",
+          "description": "A leak-free chemometric regression pipeline for the Tecator NIR benchmark (OpenML 505), predicting meat fat content (%) from 100-channel near-infrared spectra. Built around domain-specific spectral preprocessing (Savitzky-Golay 2nd derivatives, SNV, MSC), a Gaussian Process model on derivative spectra, and a stacking ensemble across 11 pipelines - evaluated with repeated stratified cross-validation to reach best-in-class accuracy, beating the classic neural-net benchmark.",
           "links": [
             { "label": "Notebook", "href": "https://github.com/ritvikmaini/Tecator-Meat-Classification" }
-          ]
+          ],
+          "stack": "Python, scikit-learn, NumPy, pandas, SciPy, Matplotlib, seaborn, Gaussian Process Regression, PLS, Kernel Ridge, stacking ensemble, Savitzky-Golay / SNV / MSC spectral preprocessing"
         },
         {
-          "name": "Beer Consumption - Sao Paulo",
-          "accuracy": "TODO: Accuracy 0.000",
-          "description": "TODO: optional short description (or remove this field).",
-          "links": [
-            { "label": "Notebook", "href": "https://github.com/ritvikmaini/Beer-Consumption-Sao-Paulo" }
-          ]
-        },
-        {
-          "name": "Digit Recognizer - MNIST",
-          "accuracy": "TODO: Accuracy 0.000",
-          "description": "TODO: optional short description (or remove this field).",
-          "links": [
-            { "label": "Notebook", "href": "https://github.com/ritvikmaini/OCR-Digit-Recognizer" }
-          ]
+        "name": "Digit Recognizer - MNIST",
+        "accuracy": "Held-out validation accuracy: 0.9955",
+        "description": "A convolutional neural-network ensemble for the Kaggle Digit Recognizer (MNIST) competition, rebuilt around two silent bugs that capped the baseline - a double normalization that divided pixels by 255 twice and a no-op shuffle that ran after the split was fixed. The corrected pipeline pairs single normalization and a stratified split with BatchNorm, stride-2 downsampling, dropout, and label-preserving augmentation, then averages three independently seeded CNNs - lifting held-out accuracy from ~97.7% to 99.55% (~5× lower error), with a documented path to ~99.7%.",
+        "links": [
+          { "label": "Notebook", "href": "https://github.com/ritvikmaini/OCR-Digit-Recognizer" }
+        ],
+        "stack": "Python, TensorFlow, Keras, NumPy, pandas, scikit-learn, CNN ensemble, data augmentation"
         },
         {
           "name": "TMDB Box Office Prediction",
-          "accuracy": "TODO: Accuracy 0.000",
-          "description": "TODO: optional short description (or remove this field).",
+          "accuracy": "Cross-validated RMSLE: 2.064",
+          "description": "A gradient-boosting ensemble for the Kaggle TMDB Box Office Prediction competition, built around a corrected RMSLE objective - the baseline trained on raw revenue while the metric is logarithmic, so v2 trains on log1p(revenue), the single largest fix. Pairs leakage-free feature engineering (JSON mining of cast/crew/genre counts, inflation and interaction features computed without target leakage) with a 5-fold out-of-fold protocol benchmarking tuned LightGBM, XGBoost, and CatBoost - cutting RMSLE ~22% and exposing the wrong-objective and overfit-encoding traps that establish ~2.0 as the honest provided-data ceiling.",
           "links": [
             { "label": "Notebook", "href": "https://github.com/ritvikmaini/TMDB-Box-Office-Prediction" }
-          ]
+          ],
+          "stack": "pandas, NumPy, scikit-learn, LightGBM, XGBoost, CatBoost, out-of-fold cross-validation, ridge stacking ensemble, log-target transform"
+        },
+        {
+          "name": "Titanic - Machine Learning from Disaster",
+          "accuracy": "Cross-validated accuracy: 0.851",
+          "description": "A stacking ensemble pipeline for the Kaggle Titanic competition, built around leak-free feature engineering (leave-one-out group survival encoding, data-driven K-means groupings) and Bayesian hyperparameter tuning across six diverse base learners - near the practical ML ceiling for this dataset.",
+          "links": [
+            { "label": "Notebook", "href": "https://github.com/ritvikmaini/Titanic-Classification" }
+          ],
+          "stack": "Python, scikit-learn, NumPy, pandas, XGBoost, LightGBM, CatBoost, Optuna, SHAP, stacking ensemble, leave-one-out target encoding, K-means feature grouping"
+        },
+        {
+          "name": "Beer Consumption - São Paulo",
+          "accuracy": "Cross-validated R²: 0.704 (RMSE ≈ 2.34 L)",
+          "description": "A rigorous, reproducible regression pipeline for the Kaggle Beer Consumption - São Paulo dataset, built around leakage-free feature engineering (no target-derived rolling features, weekend×temperature interactions, cyclical month encoding) and a unified 5-fold cross-validation protocol that fairly benchmarks four tuned linear models against three tree ensembles. Establishes that a GridSearch-tuned Lasso is the honest practical ceiling for this 365-row dataset - and that tree ensembles overfit and score lower - exposing the target-leakage and lucky-split traps that inflate naïve solutions.",
+          "links": [
+            { "label": "Notebook", "href": "https://github.com/ritvikmaini/Beer-Consumption-Sao-Paulo" }
+          ],
+          "stack": "Python, pandas, NumPy, scikit-learn, LinearRegression, Ridge, Lasso, ElasticNet, RandomForest, GradientBoosting, HistGradientBoosting, Pipeline, StandardScaler, GridSearchCV, KFold CV, Matplotlib, seaborn, Jupyter"
         }
       ]
     }
