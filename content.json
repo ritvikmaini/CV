@@ -21,6 +21,7 @@
 
   "about": {
     "bio": "Building,growing and consistently learning",
+    "portrait": "/portrait.jpg",
     "languages": ["English (Native)", "German (C2)","Hindi (Native)"]
   },
 
@@ -53,28 +54,43 @@
 
   "skills": [
     {
-      "label": "Forecasting & ML",
+      "label": "Machine Learning & AI",
       "items": [
-        "LightGBM", "PyTorch", "TensorFlow", "Scikit-learn",
-        "Time-Series Forecasting", "Foundation Models",
-        "Ensemble & Statistical Methods", "Exploratory Data Analysis",
-        "LLMs & RAG", "OpenCV"
+        "scikit-learn", "PyTorch", "LightGBM", "TensorFlow",
+        "Time-Series Forecasting", "Unsupervised Clustering (DBSCAN, HDBSCAN)",
+        "Ensemble & Statistical Methods", "Bayesian Hyperparameter Tuning",
+        "Dimensionality Reduction (UMAP, PCA)", "Foundation Models",
+        "Model Evaluation & Backtesting"
       ]
     },
     {
-      "label": "Data & Infrastructure",
+      "label": "Generative AI & LLMs",
       "items": [
-        "Apache Airflow", "PostgreSQL",
-        "AWS (Lambda, S3, DynamoDB)",
-        "GCP (BigQuery, Cloud Functions, Cloud Storage, Vertex AI)",
-        "Docker", "Data Pipeline & ETL Design"
+        "OpenAI API (gpt-image-1, Responses API)", "LLMs & RAG",
+        "Prompt Engineering", "Structured Output (Pydantic)",
+        "Multilingual Generation"
+      ]
+    },
+    {
+      "label": "Computer Vision",
+      "items": [
+        "OpenCV", "InsightFace / ArcFace", "Face Embeddings",
+        "MediaPipe Pose", "Google Cloud Vision", "Pillow", "rembg"
+      ]
+    },
+    {
+      "label": "Data & Cloud Infrastructure",
+      "items": [
+        "GCP (BigQuery, Cloud Functions, Cloud Storage, Vertex AI, Secret Manager)",
+        "AWS (Lambda, S3, DynamoDB)", "Serverless & Event-Driven Pipelines",
+        "Apache Airflow", "PostgreSQL", "Docker", "Data Pipeline & ETL Design"
       ]
     },
     {
       "label": "Languages & Tools",
       "items": [
-        "Python", "SQL", "C++", "Git", "REST APIs",
-        "Pandas", "Pydantic", "Playwright", "Agile (Scrum)"
+        "Python", "SQL", "C++", "pandas", "NumPy", "Pydantic",
+        "Git", "REST APIs", "Playwright", "Agile (Scrum)"
       ]
     }
   ],
@@ -143,40 +159,62 @@
 
   "projects": [
     {
+      "label": "Identity Resolution via Unsupervised Face-Embedding Clustering",
+      "highlights": [
+        "A fashion e-commerce catalog holds hundreds of thousands of studio images of models, with nothing tying together the shots of the same person. I built an unsupervised pipeline that resolves those images into distinct model identities with no labels and no known number of people: 500,000+ studio images, deduplicated by content hash to roughly 73,000 unique 512-dimensional face embeddings, then clustered across four algorithms (DBSCAN, HDBSCAN, Agglomerative, and a from-scratch Chinese Whispers graph clusterer). The result is identity as a new product attribute over the catalog, the foundation for country-specific performance marketing and lower return rates through fit transparency.",
+        "The genuinely hard problem was not clustering but trust: with no ground-truth identities, how do you know the groups are real structure rather than noise, and which of many algorithm-and-hyperparameter configurations to believe? The core of the work is a statistically grounded evaluation methodology: a Hopkins clusterability test extended with a permutation-null significance test, a three-tier gated metric pipeline that runs expensive density and geometric metrics only on configurations that clear cheaper checks, and a transparent composite ranking. It was submitted as a bachelor thesis at Hochschule Darmstadt, graded 1.0 and nominated for the university's Dissertation of the Year 2025.",
+        "I later released a clean, public re-implementation of the methodology on open data, adding the external ground-truth validation the original work could not have. On the LFW benchmark it recovers identities at up to 0.999 ARI across 80 people, and the full configuration spread (0.19 to 0.999) shows the framework genuinely separates good clusterings from bad. It ships a deterministic synthetic path for reproducibility, a full test suite, and narrative notebooks."
+      ],
+      "period": "2025",
+      "stack": ["Python", "InsightFace / ArcFace", "scikit-learn", "hdbscan", "UMAP", "PCA", "NumPy", "pandas", "GCP BigQuery"],
+      "link": "https://github.com/ritvikmaini/face-embedding-clustering",
+      "pdfs": [
+        { "file": "/thesis.pdf", "label": "Bachelor Thesis" },
+        { "file": "/thesis-defense.pdf", "label": "Thesis Defense" }
+      ]
+    },
+    {
       "label": "Automated Image Cropping Pipeline (GCP)",
-      "description": "TODO: What it does and why it matters.",
-      "period": "TODO: Year",
-      "stack": ["TODO", "TODO"],
-      "link": ""
+      "highlights": [
+    "A fashion e-commerce catalog ships hundreds of product images a day, and every one has to be cropped to a consistent aspect ratio with the model framed correctly, where the rules differ by garment: a top is framed to the upper body, trousers to the lower body, a full outfit to the whole figure. Done by hand this is high-volume post-processing that gates every image before it can reach a product page. I built an event-driven, serverless pipeline that automates both the decision and the crop: it fires whenever a studio photo lands in a cloud bucket, reads a pose code from the filename, resolves the garment's category from a product database, detects the model's pose, and emits a fixed-aspect-ratio, color-managed crop ready for the catalog. It ran in production for a German fashion e-commerce retailer, in daily use by around six photographers across three studios, cutting manual post-processing time by about 30 percent and removing roughly two FTE of manual cropping from the studio-to-catalog workflow.",
+    "The interesting part was not detecting a person but deciding how to frame them, and doing it safely at production scale. The core of the system is a metadata-driven crop router that fuses two signals, an explicit pose code parsed from the filename and a live garment-category lookup against the product database, to select among four cropping strategies with explicit precedence and a confidence-based escape hatch: clear cases produce a single deterministic crop, while ambiguous ones produce both candidate crops and divert to a human-review folder, so reviewers only ever see the uncertain minority. The geometry is guarded rather than trusted blindly: each full-body crop re-measures its realized aspect ratio after clamping to the image bounds and falls back to a safe full-width crop for frame-edge subjects, within a ±0.01 tolerance. Output is color-managed with an embedded Adobe RGB profile at full JPEG quality for catalog fidelity, and the destination bucket's folder layout doubles as a triage and error dashboard. A companion function mirrors results into shared storage through a concurrent, recursive, idempotent sync.",
+    "I later released a clean, genericized public version of the system on open infrastructure, with every employer-specific identifier and secret removed. It adds a visualization layer that makes the otherwise invisible logic legible: per-image pose-landmark overlays, the actual candidate crop boxes drawn on the frame with their realized aspect ratios, the router's decision annotated from its inputs, and the aspect-ratio guard shown engaging on a frame-edge case. It ships an offline demo that runs the full detection, routing, and crop path on a single image with no cloud access, a test suite covering the router precedence and the crop guard, and CI. The pose detection itself is a library call rather than a custom model; the contribution is the data-driven framing decision, the safety controls around it, and the operational engineering that made it dependable in a real studio workflow."
+  ],
+  "period": "",
+  "stack": ["Python", "Google Cloud Functions (Gen2)", "Cloud Storage", "BigQuery", "Secret Manager", "MediaPipe Pose", "OpenCV", "NumPy", "Pillow"],
+  "link": "https://github.com/ritvikmaini/posecropper",
+      "pdfs": [
+        { "file": "/pose-cropper.pdf", "label": "Project Slides" }
+      ]
     },
     {
-      "label": "Unsupervised Face Clustering for Identity Grouping",
-      "description": "TODO: What it does and why it matters.",
-      "period": "TODO: Year",
-      "stack": ["TODO", "TODO"],
-      "link": ""
-    },
+  "label": "Product Image Generation Pipeline",
+  "highlights": [
+    "Online stores need clean product-only packshots, but producing them traditionally means re-shooting each garment in a studio or hand-retouching model photos, both slow and expensive. This pipeline removes that step entirely: it generates invisible-mannequin packshots directly from existing model-worn images using OpenAI image models, faithfully preserving prints, trims, and labels. The intelligence is in what it chooses to generate. BigQuery business rules target only items that are in stock and actually missing a packshot, then rank the available reference photos to pick the best source, so generation effort lands only where it drives sales. Supporting stages handle image download, model-versus-product sorting, background removal, and aspect-ratio conformance to webshop spec.",
+    "Eliminated the studio reshoot as a prerequisite for catalog imagery, generating publication-ready packshots on demand from photos the business already owned. Across a 32,000+ article catalog, a single run could surface and fill hundreds of missing images at once, with one backfill query alone identifying 964 articles ready for generation. A manual, photographer-dependent bottleneck became a self-service batch job."
+  ],
+  "period": "2025",
+  "stack": ["Python", "OpenAI gpt-image-1", "BigQuery", "Google Cloud Vision", "rembg", "OpenCV", "Pillow"],
+  "link": ""
+},
+{
+  "label": "Multilingual Product Description Pipeline",
+  "highlights": [
+    "Built a multilingual (EN/DE/FR/NL/SV) product description engine on the OpenAI Responses API that writes bullets and descriptions at roughly 1,000 articles per run. A composable BigQuery builder finds exactly the products missing copy in each language and ranks them by live stock, so the model writes only what is both absent and commercially relevant. Per-call Pydantic schema factories force validated structured output instead of fragile text parsing, while a per-language prompt system enforces house style through blocklists, negation regex, and caps that strip colors, percentages, and fabric weights. A layered retry path even falls back to text-only when an image input times out.",
+    "Replaced agency and per-language translation work with an in-house pipeline that produces import-ready PIM files across five markets in a single run. Because it targets only missing content ranked by live stock, every run closes real catalog gaps instead of regenerating copy that already exists, estimated to save about EUR 10k/year in copywriting cost."
+  ],
+  "period": "2025",
+  "stack": ["Python", "OpenAI Responses API", "Pydantic", "BigQuery", "pandas", "tenacity"],
+  "link": ""
+},
     {
-      "label": "AI Apparel Image Generation",
-      "description": "TODO: What it does and why it matters.",
-      "period": "TODO: Year",
-      "stack": ["TODO", "TODO"],
-      "link": ""
-    },
-    {
-      "label": "LLM Product Description Generator",
-      "description": "TODO: What it does and why it matters.",
-      "period": "TODO: Year",
-      "stack": ["TODO", "TODO"],
-      "link": ""
-    },
-    {
-      "label": "Touch-recognition",
-      "description": "TODO: What it does and why it matters.",
-      "period": "TODO: Year",
-      "stack": ["TODO", "TODO"],
-      "link": ""
-    },
+    "label": "Touch-recognition",
+    "description": "Real-time multitouch blob tracker that turns a camera feed into TUIO cursor events. Uses an OpenCV pipeline (background subtraction, high-pass thresholding,contour/ellipse fitting) to detect fingertips, tracks them across frames with stable IDs via nearest-neighbor matching, and streams them as TUIO 1.1 cursors over OSC — a drop-in touch source for interactive tables and TUIO-compatible apps.",
+    "period": "2024",
+    "stack": ["Python", "OpenCV", "NumPy", "TUIO/OSC"],
+    "link": "https://github.com/ritvikmaini/Touch-recognition"
+  },
+
     {
       "label": "Kaggle Challenges",
       "description": "TODO: optional intro line about your Kaggle work (or remove this field).",

@@ -7,6 +7,7 @@ import {
   projects,
   sectionLabel,
 } from "@/lib/content";
+import PdfCard from "./PdfCard";
 
 interface SectionPanelProps {
   section: string | null;
@@ -192,6 +193,20 @@ function ProjectEntryContent({ slug }: { slug: string }) {
         {entry.description && (
           <p className="text-white/70 text-lg leading-relaxed max-w-3xl">{entry.description}</p>
         )}
+        {entry.highlights && entry.highlights.length > 0 && (
+          <div style={{ marginTop: entry.description ? "1rem" : 0 }} className="max-w-3xl">
+            {entry.highlights.map((h, i) => (
+              <div
+                key={i}
+                className="flex items-start gap-4 text-white/70"
+                style={{ marginTop: i === 0 ? 0 : "0.5rem" }}
+              >
+                <span className="text-[var(--accent)] mt-1 shrink-0">→</span>
+                <span className="text-lg leading-relaxed">{h}</span>
+              </div>
+            ))}
+          </div>
+        )}
         {entry.period && (
           <p className="mono-label text-white/40 text-xs" style={{ marginTop: "1rem" }}>{entry.period}</p>
         )}
@@ -212,6 +227,20 @@ function ProjectEntryContent({ slug }: { slug: string }) {
           >
             View project →
           </a>
+        )}
+
+        {/* Attached PDFs — preview cards that open in a new tab */}
+        {entry.pdfs && entry.pdfs.length > 0 && (
+          <div style={{ marginTop: "1.75rem" }}>
+            <p className="mono-label text-white/40 text-xs" style={{ marginBottom: "0.9rem" }}>
+              Documents
+            </p>
+            <div className="flex flex-wrap" style={{ gap: "1.25rem" }}>
+              {entry.pdfs.slice(0, 2).map((d, i) => (
+                <PdfCard key={d.file} doc={d} index={i} />
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Sub-entries (e.g. individual Kaggle challenges) */}

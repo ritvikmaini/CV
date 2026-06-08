@@ -35,6 +35,8 @@ export interface SkillCategory {
 
 export interface About {
   bio: string;
+  /** Optional circular portrait shown in the About header (path under /public). */
+  portrait?: string;
   languages: string[];
 }
 
@@ -61,15 +63,32 @@ export interface ProjectChallenge {
   links?: ProjectLink[];
 }
 
+/** An attachable PDF (preview-thumbnailed, opens in a new tab). */
+export interface PdfDoc {
+  /** Path under /public, e.g. "/thesis.pdf". */
+  file: string;
+  /** Caption shown under the thumbnail. */
+  label: string;
+  /**
+   * Optional image to use as the thumbnail instead of auto-rendering the
+   * PDF's first page (path under /public, e.g. "/thesis-cover.png").
+   */
+  thumbnail?: string;
+}
+
 export interface ProjectEntry {
   slug: string;
   label: string;
   // All optional: a project is either a single write-up (description/stack/
   // link) or a list of sub-entries (`entries`), or any mix of the two.
   description?: string;
+  /** Arrow-bulleted points, rendered like an experience entry's highlights. */
+  highlights?: string[];
   period?: string;
   stack?: string[];
   link?: string;
+  /** Attached PDFs (1–2), shown as preview cards. PDFs only on projects. */
+  pdfs?: PdfDoc[];
   entries?: ProjectChallenge[];
 }
 
