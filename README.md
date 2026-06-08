@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ritvikmaini.com
 
-## Getting Started
+Personal portfolio — a single-page site with a two-level "arc" navigation, full-screen overlay
+detail pages, a canvas constellation background, and PDF previews. All copy is data-driven from one
+JSON file.
 
-First, run the development server:
+**Stack:** Next.js 16 (App Router, static export) · React 19 · Tailwind v4 · Framer Motion ·
+pdf.js (`pdfjs-dist`). Deployed as a static export to GitHub Pages.
+
+> **For agents / deep architecture:** read [`CLAUDE.md`](./CLAUDE.md). It documents the state model,
+> the scroll engine, the arc components, and every `content.json` field. [`AGENTS.md`](./AGENTS.md)
+> notes that this repo runs **Next.js 16**, which has breaking changes vs. older docs — consult
+> `node_modules/next/dist/docs/` before writing Next.js code.
+
+## Commands
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev     # dev server (Turbopack) → http://localhost:3000
+npm run build   # static export → ./out  (what CI deploys)
+npm run lint    # eslint (flat config)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+There is no test suite, and `npm start` is unused — the site is a static export, not a server.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Editing content
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Everything you see is edited in [`content.json`](./content.json)** (repo root) — identity, social
+links, section names, education, skills, experience, projects, and the About section. Components hold
+only layout/animation; don't hard-code copy into them. `lib/content.ts` is the typed loader that adds
+the arc `slug`s and is what components import.
 
-## Learn More
+It's strict JSON (double-quoted keys/strings, commas between items, **no trailing comma**, no
+comments) — a mistake shows up as a build/dev-overlay error. `npm run dev` hot-reloads on save.
 
-To learn more about Next.js, take a look at the following resources:
+Common edits:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Add / reorder experience or projects** — edit those arrays; the arc, scrolling, slugs
+  (`exp-N` / `proj-N`), and detail pages all follow automatically.
+- **Rename a section** — change its `label` in `sections` (leave the `id`). Updates the nav link and
+  the section heading.
+- **Project body** — use `description` (one paragraph) and/or `highlights` (an array of paragraphs
+  rendered as `→` bullets, like an experience entry).
+- **Attach PDFs to a project** — drop the file in `public/`, then add a `pdfs` entry
+  (`{ "file": "/thesis.pdf", "label": "Bachelor Thesis" }`, 1–2 max). The card auto-renders the
+  first page as a thumbnail and opens the PDF in a new tab. Add an optional `thumbnail` image path to
+  override the auto-render.
+- **About portrait** — drop an image in `public/` and set `about.portrait` (e.g. `/portrait.jpg`);
+  it renders as a circular avatar. Fine-tune the crop in `components/AboutModal.tsx`.
+- **Skills** — a list of `{ label, items[] }` categories, rendered in order; reorder to reflect
+  importance.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Optional fields (`description`, `highlights`, `period`, `stack`, `link`, `pdfs`, portrait, …) are
+hidden when empty — delete the line to omit.
 
-## Deploy on Vercel
+## Assets
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`public/` is served at the site root and **committed to git** (it ships with the export): PDFs,
+`portrait.jpg`, `CNAME` (custom domain), and `.nojekyll`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+Push to `main` → `.github/workflows/deploy.yml` builds the static export and publishes to GitHub
+Pages at `ritvikmaini.com`. Keep `next.config.ts` set to `output: "export"`, `trailingSlash: true`,
+`images.unoptimized: true` for the export to work, and leave Pages on the **workflow** build type.

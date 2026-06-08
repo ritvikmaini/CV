@@ -54,43 +54,28 @@
 
   "skills": [
     {
-      "label": "Machine Learning & AI",
+      "label": "Forecasting & ML",
       "items": [
-        "scikit-learn", "PyTorch", "LightGBM", "TensorFlow",
-        "Time-Series Forecasting", "Unsupervised Clustering (DBSCAN, HDBSCAN)",
-        "Ensemble & Statistical Methods", "Bayesian Hyperparameter Tuning",
-        "Dimensionality Reduction (UMAP, PCA)", "Foundation Models",
-        "Model Evaluation & Backtesting"
+        "LightGBM", "PyTorch", "TensorFlow", "Scikit-learn",
+        "Time-Series Forecasting", "Foundation Models",
+        "Ensemble & Statistical Methods", "Exploratory Data Analysis",
+        "LLMs & RAG", "OpenCV"
       ]
     },
     {
-      "label": "Generative AI & LLMs",
+      "label": "Data & Infrastructure",
       "items": [
-        "OpenAI API (gpt-image-1, Responses API)", "LLMs & RAG",
-        "Prompt Engineering", "Structured Output (Pydantic)",
-        "Multilingual Generation"
-      ]
-    },
-    {
-      "label": "Computer Vision",
-      "items": [
-        "OpenCV", "InsightFace / ArcFace", "Face Embeddings",
-        "MediaPipe Pose", "Google Cloud Vision", "Pillow", "rembg"
-      ]
-    },
-    {
-      "label": "Data & Cloud Infrastructure",
-      "items": [
-        "GCP (BigQuery, Cloud Functions, Cloud Storage, Vertex AI, Secret Manager)",
-        "AWS (Lambda, S3, DynamoDB)", "Serverless & Event-Driven Pipelines",
-        "Apache Airflow", "PostgreSQL", "Docker", "Data Pipeline & ETL Design"
+        "Apache Airflow", "PostgreSQL",
+        "AWS (Lambda, S3, DynamoDB)",
+        "GCP (BigQuery, Cloud Functions, Cloud Storage, Vertex AI)",
+        "Docker", "Data Pipeline & ETL Design"
       ]
     },
     {
       "label": "Languages & Tools",
       "items": [
-        "Python", "SQL", "C++", "pandas", "NumPy", "Pydantic",
-        "Git", "REST APIs", "Playwright", "Agile (Scrum)"
+        "Python", "SQL", "C++", "Git", "REST APIs",
+        "Pandas", "Pydantic", "Playwright", "Agile (Scrum)"
       ]
     }
   ],
@@ -159,6 +144,18 @@
 
   "projects": [
     {
+  "label": "Financial Metric Forecasting",
+  "highlights": [
+    "A financial forecast is only as trustworthy as the backtest that validates it, and a backtest is dangerously easy to fool: future information can leak into a past decision through a dozen subtle channels and quietly inflate the score. I built a point-in-time-correct, leakage-free backtesting framework for forecasting forward annual fundamentals (EPS, EBITDA, EBIT) entirely on public data: SEC EDGAR filings, yfinance prices, and FRED macro context flow through a field-level point-in-time feature layer and an expanding-window walk-forward backtester, with LightGBM, the TiRex zero-shot time-series foundation model, and a simplex-blended meta-learner inside the loop.",
+    "The defining engineering of the project is a correctness surface that makes the backtest trustworthy by construction: the handful of specific places a forecast backtest can leak future information, each one enumerated, guarded, and locked by a regression test written to fail at the bug's own mechanism rather than at a downstream metric drift. Two of the subtler leaks were caught at design review before any code ran: a comparative-row trap, where every annual filing restates the prior year and a naive target lookup ends up scoring the model on a value it already knew, and in-sample meta-learner stacking, which silently flatters whichever base model overfits hardest. The framework assembles every feature point-in-time so a later restatement never bleeds backward, pins its train/test purge to label availability rather than a fixed gap, and ships behind roughly 375 tests, a hermetic CI gate, and a no-TBD engineering ledger where every methodology lesson carries a runnable reproducer.",
+    "The project is precise about its evidence. On a transparent public fixture the TiRex foundation model edges the naive baseline on median error and recovers the direction of earnings moves around eighty percent of the time, with the blend strongest at short horizons. A central research finding is how demanding the naive baseline itself is, since annual fundamentals are highly persistent year over year, established here by a cross-validation in which that baseline's error is recovered two fully independent ways, 0.178 across the full filing history and 0.180 through the point-in-time backtest, two paths landing on one number. Three narrated EDA notebooks carry the research, and the framework ships with the full test and invariant suite, a one-command reproducible scoreboard stamped with its commit, and a methodology document where every quantitative claim is tied to a reproducer and every limitation is stated plainly."
+  ],
+  "period": "2026",
+  "stack": ["Python", "DuckDB", "LightGBM", "TiRex / tirex-ts", "scikit-learn", "pandas", "NumPy", "SEC EDGAR XBRL", "yfinance", "FRED", "pytest"],
+  "link": "https://github.com/ritvikmaini/financial-metric-forecasting",
+  "pdfs": []
+},
+    {
       "label": "Identity Resolution via Unsupervised Face-Embedding Clustering",
       "highlights": [
         "A fashion e-commerce catalog holds hundreds of thousands of studio images of models, with nothing tying together the shots of the same person. I built an unsupervised pipeline that resolves those images into distinct model identities with no labels and no known number of people: 500,000+ studio images, deduplicated by content hash to roughly 73,000 unique 512-dimensional face embeddings, then clustered across four algorithms (DBSCAN, HDBSCAN, Agglomerative, and a from-scratch Chinese Whispers graph clusterer). The result is identity as a new product attribute over the catalog, the foundation for country-specific performance marketing and lower return rates through fit transparency.",
@@ -207,6 +204,16 @@
   "stack": ["Python", "OpenAI Responses API", "Pydantic", "BigQuery", "pandas", "tenacity"],
   "link": ""
 },
+{
+  "label": "Catalog Data Governance Pipeline",
+  "highlights": [
+    "This engine powered the data governance behind three B2B webshops, a core line of the business, deciding which products go live, which come down, and how the assortment is categorized and refreshed. A blocker engine evaluates 10+ eligibility rules per article (stock, image presence, price sanity, brand eligibility, lifecycle status), while a category rule engine computes the exact add and remove deltas across Men, Women, Kids, Accessories, and Sales. It generates the SAP attribute-flag import files and Pimcore category updates that publish, remove, and re-flag articles in bulk, drives new-drop and topseller rotation from a rolling sales window, and ages out stale lifecycle tags automatically.",
+    "Ran live catalog operations across three B2B webshops at 200,000+ SKUs, replacing recurring manual merchandising review with automated, rule-driven runs. The pipeline proved durable enough to be extended to five B2C webshops as a pilot and then absorbed into the company's core onboarding architecture, with the production automation built on the backbone of this codebase. It also produced Power BI and matplotlib/seaborn reporting that gave C-level leadership, sales teams, and other stakeholders a single view of catalog health, blocker distribution, and assortment changes."
+  ],
+  "period": "2025",
+  "stack": ["Python", "BigQuery", "pandas", "SAP Business One", "Pimcore", "Power BI"],
+  "link": ""
+},
     {
     "label": "Touch-recognition",
     "description": "Real-time multitouch blob tracker that turns a camera feed into TUIO cursor events. Uses an OpenCV pipeline (background subtraction, high-pass thresholding,contour/ellipse fitting) to detect fingertips, tracks them across frames with stable IDs via nearest-neighbor matching, and streams them as TUIO 1.1 cursors over OSC — a drop-in touch source for interactive tables and TUIO-compatible apps.",
@@ -228,11 +235,43 @@
           ]
         },
         {
-          "name": "TODO: Challenge name",
+          "name": "Phoneme-Classification",
           "accuracy": "TODO: Accuracy 0.000",
           "description": "TODO: optional short description (or remove this field).",
           "links": [
-            { "label": "Notebook", "href": "https://www.kaggle.com/..." }
+            { "label": "Notebook", "href": "https://github.com/ritvikmaini/Phoneme-Classification" }
+          ]
+        },
+        {
+          "name": "Tecator-Meat-Classification",
+          "accuracy": "TODO: Accuracy 0.000",
+          "description": "TODO: optional short description (or remove this field).",
+          "links": [
+            { "label": "Notebook", "href": "https://github.com/ritvikmaini/Tecator-Meat-Classification" }
+          ]
+        },
+        {
+          "name": "Beer Consumption - Sao Paulo",
+          "accuracy": "TODO: Accuracy 0.000",
+          "description": "TODO: optional short description (or remove this field).",
+          "links": [
+            { "label": "Notebook", "href": "https://github.com/ritvikmaini/Beer-Consumption-Sao-Paulo" }
+          ]
+        },
+        {
+          "name": "Digit Recognizer - MNIST",
+          "accuracy": "TODO: Accuracy 0.000",
+          "description": "TODO: optional short description (or remove this field).",
+          "links": [
+            { "label": "Notebook", "href": "https://github.com/ritvikmaini/OCR-Digit-Recognizer" }
+          ]
+        },
+        {
+          "name": "TMDB Box Office Prediction",
+          "accuracy": "TODO: Accuracy 0.000",
+          "description": "TODO: optional short description (or remove this field).",
+          "links": [
+            { "label": "Notebook", "href": "https://github.com/ritvikmaini/TMDB-Box-Office-Prediction" }
           ]
         }
       ]

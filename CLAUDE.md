@@ -20,7 +20,20 @@ Tailwind v4 quirk: newly added spacing/utility classes sometimes don't take effe
 
 ## Architecture
 
-Single-page portfolio modelled on anshulchahar.com. Everything renders from one route (`app/page.tsx`) — there is no routing; "pages" are full-screen overlay modals. Stack: Next 16 App Router + React 19 + Tailwind v4 + Framer Motion + a hand-rolled canvas animation.
+Single-page portfolio modelled on anshulchahar.com. Everything renders from one route (`app/page.tsx`) — there is no routing; "pages" are full-screen overlay modals. Stack: Next 16 App Router + React 19 + Tailwind v4 + Framer Motion + a hand-rolled canvas animation + pdf.js (`pdfjs-dist`) for PDF thumbnails.
+
+### Component map
+
+- `app/page.tsx` — sole state orchestrator + the scroll/keyboard/touch engine (see below).
+- `app/layout.tsx` — loads the three `next/font` faces; `globals.css` maps them to Tailwind `font-*` utilities and defines the shared overlay/atmosphere classes.
+- `components/ArcNav.tsx` / `components/MobileLayout.tsx` — the arc, rendered twice (desktop / mobile); keep them in sync.
+- `components/HeroName.tsx` — the name block; **is the home button**.
+- `components/SectionPanel.tsx` — detail overlay for `education` / `skills` and every `exp-*` / `proj-*` entry (renders project `highlights`, `stack`, `pdfs`, `entries`).
+- `components/AboutModal.tsx` — the About overlay, incl. the circular portrait.
+- `components/PdfCard.tsx` — reusable PDF preview card (first-page thumbnail → opens in a new tab). Used by `SectionPanel`; generic enough for a future résumé viewer.
+- `components/DotCanvas.tsx` — background constellation. `components/SocialLinks.tsx` — the under-name links.
+- `lib/content.ts` — the typed loader for `content.json` (the only data source).
+- `public/` — static assets served at the site root **and committed to git** (deployed via Pages): PDFs (`thesis.pdf`, …), `portrait.jpg`, `CNAME`, `.nojekyll`, `resume.pdf` (when added).
 
 ### Content is data-driven (single source of truth)
 
@@ -31,6 +44,8 @@ Single-page portfolio modelled on anshulchahar.com. Everything renders from one 
 - It's strict JSON: double-quote every key/string, comma between items, **no trailing comma** on the last item, no comments. A mistake surfaces as a build/dev-overlay error, not silently. `npm run dev` hot-reloads on save (usually a full refresh, which resets the view to the top level — expected).
 - **Add / remove / reorder** experience or project entries by editing those arrays; slugs (`exp-N`/`proj-N`) renumber automatically, and the arc, scrolling, and detail page all follow.
 - **Rename a section:** change its `label` in `sections` (leave `id` — it's structural). Updates the nav link *and* that section's panel heading.
+- **About portrait:** `about.portrait` is a path under `public/` (e.g. `/portrait.jpg`) shown as a circular avatar in the About header (`AboutModal`); omit/empty to hide it. Drop the new image in `public/` first. The crop/framing (face position + the bottom mask that fades the torso into negative space) lives in `AboutModal.tsx` — tune `objectPosition` and the mask stops there, not in content. `about.bio` and `about.languages` complete that section.
+- **Skills** is a list of `{ label, items[] }` categories rendered in order, each a row of pills — reorder the array (and items) to reflect importance. Labels are free text.
 - **Optional fields are hidden when absent/empty:** experience `highlights`, project `description`/`highlights`/`period`/`stack`/`link`/`pdfs`. Delete the line to omit it.
 - **Project bodies: `description` (one paragraph) OR `highlights` (multiple paragraphs).** Like an experience entry, a project's `highlights` is an array of strings rendered as **arrow (→) bullets** — one per paragraph; use it when a project needs more than a single line. `description` and `highlights` can coexist (description reads as a lead-in above the bullets). See the Identity Resolution project for the shape.
 - **A project can attach 1–2 PDFs** via a `pdfs` array (PDFs only on projects). Each is `{ file, label, thumbnail? }`: `file` is a path under `public/` (e.g. `/thesis.pdf`); the card auto-renders the PDF's **first page** as the thumbnail (client-side, via pdf.js) — supply `thumbnail` (an image path under `public/`) only to override that. Clicking opens the PDF in a **new tab** (browser viewer / save), never a forced download. Until the `file` exists in `public/`, the card shows a clean document-glyph fallback. The card (`components/PdfCard.tsx`) is generic and reusable — e.g. for a future résumé viewer.
@@ -87,7 +102,9 @@ This is the heart of the site's feel. **There is no native page scroll** (`body 
 
 ### Overlays
 
-`AboutModal.tsx` and `SectionPanel.tsx` are full-screen `modal-overlay` (dark, blurred) layers. `SectionPanel` is a router-by-string: `education`/`skills` render their own content components; `exp-*`/`proj-*` slugs render `ExperienceEntryContent`/`ProjectEntryContent`, which look the entry up by `slug` in the content arrays. All their data comes from `content.json` via `lib/content.ts` (see "Content is data-driven" above). Both overlays share the `.detail-page` (top/left/right/bottom buffer) and `.detail-close` (X parked inside the top buffer) classes from `globals.css`, so long, wrapping titles never collide with the close button — reuse those classes for any new detail page.
+`AboutModal.tsx` and `SectionPanel.tsx` are full-screen `modal-overlay` (dark, blurred) layers. `AboutModal` shows the bio, the circular `about.portrait`, education, contact and languages. `SectionPanel` is a router-by-string: `education`/`skills` render their own content components; `exp-*`/`proj-*` slugs render `ExperienceEntryContent`/`ProjectEntryContent`, which look the entry up by `slug` in the content arrays. `ProjectEntryContent` renders, in order: `description` lead-in, `highlights` arrow-bullets, `period`, `stack` pills, `link`, `pdfs` cards (`PdfCard`), then `entries` sub-items. All their data comes from `content.json` via `lib/content.ts` (see "Content is data-driven" above). Both overlays share the `.detail-page` (top/left/right/bottom buffer) and `.detail-close` (X parked inside the top buffer) classes from `globals.css`, so long, wrapping titles never collide with the close button — reuse those classes for any new detail page.
+
+**PDF thumbnails (`PdfCard.tsx`).** Client-only: dynamically imports `pdfjs-dist`, renders page 1 to a canvas → data-URL, displayed in a uniform 16:9 circle-free card (portrait pages crop to their top). The pdf.js **worker** is referenced via `new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url)`, which the bundler emits into the static export (`out/_next/static/media/…`) — so it works on Pages with no extra config. A `thumbnail` field overrides the auto-render; a missing file falls back to a document glyph.
 
 ### Background animation (`DotCanvas.tsx`)
 
@@ -99,9 +116,9 @@ Push to `main` → `.github/workflows/deploy.yml` builds the static export and p
 
 ## Known placeholders
 
-All fixable by editing `content.json`:
+All fixable by editing `content.json` (or dropping a file in `public/`):
 
-- `public/resume.pdf` does not exist yet (`profile.links.resume` points to it).
-- `about.bio` is placeholder text.
-- Most experience/project detail bodies are still `TODO` placeholders (the labels/companies are real; some experience entries and the first Kaggle challenge are filled in). Empty optional fields are hidden in the UI.
+- `public/resume.pdf` does not exist yet (`profile.links.resume` points to it). When you add it, the `PdfCard` component is ready to preview it if you want a thumbnail instead of the raw link.
+- `about.bio` is short placeholder text.
+- Remaining `TODO` bodies: the TB International experience entry, and the `accuracy`/`description` on most Kaggle challenge entries (their names + repo links are real). The project write-ups and the Bavest experience are filled in. Empty optional fields are hidden in the UI.
 - Nav links `ritvikmaini.com/linkedin` and `/github` are external redirect paths — they 404 if hit on the static site itself.
