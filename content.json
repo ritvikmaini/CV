@@ -20,9 +20,16 @@
   ],
 
   "about": {
-    "bio": "Building,growing and consistently learning",
+    "bio": "I build production systems where machine learning meets the real world. I've shipped a fundamentals-forecasting platform at a fintech, automated a 200,000-SKU e-commerce catalog end to end across three years, and written an award-nominated thesis on unsupervised face-embedding clustering. I'm drawn to problems that are messy, high-leverage, and measurable.",
+    "status": "MSc AI & ML at TU Darmstadt · open to roles in AI, finance & automation",
     "portrait": "/portrait.jpg",
-    "languages": ["English (Native)", "German (C2)","Hindi (Native)"]
+    "focus": [
+      { "label": "AI & Machine Learning", "detail": "Production ML, forecasting, and computer-vision systems." },
+      { "label": "Finance", "detail": "Fundamentals forecasting and market-data infrastructure." },
+      { "label": "Automation", "detail": "End-to-end pipelines that replace manual, repetitive work." },
+      { "label": "Problem Solving", "detail": "Messy, high-leverage problems, measured honestly." }
+    ],
+    "languages": ["English (Native)", "German (C2)", "Hindi (Native)"]
   },
 
   "education": [

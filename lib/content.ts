@@ -33,10 +33,20 @@ export interface SkillCategory {
   items: string[];
 }
 
+/** One focus area shown in the About "what I work on" band. */
+export interface AboutFocus {
+  label: string;
+  detail: string;
+}
+
 export interface About {
   bio: string;
-  /** Optional circular portrait shown in the About header (path under /public). */
+  /** One-line availability/status shown with a pulse dot in the hero. */
+  status?: string;
+  /** Optional portrait shown in the About header (path under /public). */
   portrait?: string;
+  /** Target domains, rendered as numbered cards. */
+  focus?: AboutFocus[];
   languages: string[];
 }
 
