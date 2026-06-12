@@ -28,7 +28,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ritvik Maini — AI Engineer",
+  title: "Ritvik Maini",
   description:
     "AI Engineer studying AI & ML at TU Darmstadt. Forecasting, machine learning, and data systems.",
   authors: [{ name: "Ritvik Maini" }],
