@@ -206,6 +206,15 @@ export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
                     ))}
                   </div>
                 </motion.div>
+
+                {/* Cookieless-analytics privacy note */}
+                <p
+                  className="text-white/30 text-[0.7rem] leading-relaxed lg:col-span-3"
+                  style={{ marginTop: "0.5rem" }}
+                >
+                  This site uses cookieless, privacy-first analytics — no cookies, no
+                  cross-day tracking, no personal data stored.
+                </p>
               </div>
             </div>
           </div>

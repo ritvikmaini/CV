@@ -98,6 +98,22 @@ export default function Home() {
   const handleArcClickRef = useRef(handleArcClick);
   useEffect(() => { handleArcClickRef.current = handleArcClick; });
 
+  // Cookieless analytics: emit a virtual pageview whenever the visible view
+  // changes (about modal, a section panel, or drilling into a branch). The
+  // beacon in /analytics.js listens for this and posts it to /px.
+  useEffect(() => {
+    const view = aboutOpen
+      ? "about"
+      : openSection
+        ? openSection
+        : arcView !== "sections"
+          ? arcView
+          : null;
+    if (view && typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("analytics:view", { detail: { section: view } }));
+    }
+  }, [openSection, aboutOpen, arcView]);
+
   // Scroll-state refs persist across re-renders (never reset by setActiveIndex).
   // The touch refs are load-bearing for live dragging: the scroll effect
   // re-runs on every step (activeIndex change), so any per-gesture state kept

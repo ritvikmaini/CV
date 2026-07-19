@@ -52,7 +52,10 @@ export default function RootLayout({
       lang="en"
       className={`${archivo.variable} ${hanken.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        {children}
+        <script defer src="/analytics.js"></script>
+      </body>
     </html>
   );
 }
