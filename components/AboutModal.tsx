@@ -9,6 +9,13 @@ interface AboutModalProps {
 
 const BIO = about.bio;
 const PORTRAIT = about.portrait;
+
+// Portrait mask — two gradients intersected: the radial feathers the outer
+// ring so the circle dissolves into the page (no hard edge), the linear fade
+// dissolves the shoulders into negative space at the bottom. Applied to the
+// circle *container* so the photo and its vignette fade out together.
+const PORTRAIT_MASK =
+  "radial-gradient(closest-side, #000 68%, transparent 100%), linear-gradient(to bottom, #000 78%, transparent 99%)";
 const STATUS = about.status;
 const FOCUS = about.focus ?? [];
 
@@ -244,34 +251,39 @@ function Portrait() {
           reduce ? undefined : { duration: 6, repeat: Infinity, ease: "easeInOut" }
         }
       >
-        {/* Soft halo, slowly breathing, so the near-black photo reads as
-            emerging from the dark rather than sitting on it. */}
+        {/* Soft halo, slowly breathing — a colour echo around the rim that ties
+            the portrait to the page palette. Kept low now that the photo is
+            light-backed: it lifts the edge, it doesn't have to light the whole
+            disc the way it did for the near-black shot. */}
         <motion.div
           aria-hidden
           className="pointer-events-none absolute -inset-6 rounded-full blur-2xl"
           style={{
             background:
-              "radial-gradient(closest-side, rgba(199,242,77,0.13), rgba(72,1,255,0.13) 48%, transparent 74%)",
+              "radial-gradient(closest-side, rgba(199,242,77,0.11), rgba(72,1,255,0.11) 48%, transparent 74%)",
           }}
           animate={
             reduce
-              ? { opacity: 0.7 }
-              : { opacity: [0.55, 0.85, 0.55], scale: [1, 1.07, 1] }
+              ? { opacity: 0.6 }
+              : { opacity: [0.45, 0.72, 0.45], scale: [1, 1.06, 1] }
           }
           transition={
             reduce ? undefined : { duration: 6, repeat: Infinity, ease: "easeInOut" }
           }
         />
-        {/* Circular portrait. The radial only feathers the outer ring so the
-            circle dissolves into the page (no hard ring) while the centred
-            head/neck stay crisp; the bottom fade starts low (80%) so it keeps
-            the full head, neck and shoulders and only dissolves the chest
-            below. Size scales fluidly via clamp(). */}
+        {/* Circular portrait. The source (public/portrait.jpg) is pre-cropped
+            square with the face centred and headroom above it, so the image
+            just fills the circle — reframe by re-cropping the file, not by
+            fighting objectPosition. Size scales fluidly via clamp(). */}
         <div
           className="relative overflow-hidden rounded-full transition-transform duration-500 ease-out group-hover:scale-[1.05]"
           style={{
             width: "clamp(14rem, 13rem + 6vw, 21rem)",
             height: "clamp(14rem, 13rem + 6vw, 21rem)",
+            maskImage: PORTRAIT_MASK,
+            WebkitMaskImage: PORTRAIT_MASK,
+            maskComposite: "intersect",
+            WebkitMaskComposite: "source-in",
           }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -281,14 +293,22 @@ function Portrait() {
             draggable={false}
             className="absolute inset-0 h-full w-full object-cover"
             style={{
-              objectPosition: "50% 0%",
-              filter: "contrast(1.05)",
-              maskImage:
-                "radial-gradient(closest-side, #000 74%, transparent 100%), linear-gradient(to bottom, #000 80%, transparent 99%)",
-              WebkitMaskImage:
-                "radial-gradient(closest-side, #000 74%, transparent 100%), linear-gradient(to bottom, #000 80%, transparent 99%)",
-              maskComposite: "intersect",
-              WebkitMaskComposite: "source-in",
+              objectPosition: "50% 50%",
+              // The wall behind the subject is bright; easing brightness and
+              // saturation down lets the photo sit *in* the dark page instead
+              // of glaring off it, while the face stays fully legible.
+              filter: "brightness(0.88) contrast(1.06) saturate(0.9)",
+            }}
+          />
+          {/* Vignette over the photo: ramps the light wall down to the
+              overlay's own background towards the rim, so what the mask fades
+              out is already page-dark and the circle has no visible edge. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(closest-side, rgba(8,7,15,0) 34%, rgba(8,7,15,0.42) 72%, rgba(8,7,15,0.9) 100%)",
             }}
           />
         </div>
