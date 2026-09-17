@@ -10,12 +10,14 @@ interface AboutModalProps {
 const BIO = about.bio;
 const PORTRAIT = about.portrait;
 
-// Portrait mask — two gradients intersected: the radial feathers the outer
-// ring so the circle dissolves into the page (no hard edge), the linear fade
-// dissolves the shoulders into negative space at the bottom. Applied to the
-// circle *container* so the photo and its vignette fade out together.
+// Portrait mask — two gradients intersected: the radial softens only the very
+// rim so the circle has no hard edge while the photo itself stays visible
+// (feather too far in and it reads as a glowing orb, not a picture); the
+// linear fade dissolves the shoulders into negative space at the bottom.
+// Applied to the circle *container* so the photo and its vignette fade out
+// together.
 const PORTRAIT_MASK =
-  "radial-gradient(closest-side, #000 68%, transparent 100%), linear-gradient(to bottom, #000 78%, transparent 99%)";
+  "radial-gradient(closest-side, #000 88%, transparent 100%), linear-gradient(to bottom, #000 84%, transparent 99.5%)";
 const STATUS = about.status;
 const FOCUS = about.focus ?? [];
 
@@ -297,18 +299,19 @@ function Portrait() {
               // The wall behind the subject is bright; easing brightness and
               // saturation down lets the photo sit *in* the dark page instead
               // of glaring off it, while the face stays fully legible.
-              filter: "brightness(0.88) contrast(1.06) saturate(0.9)",
+              filter: "brightness(0.92) contrast(1.05) saturate(0.92)",
             }}
           />
-          {/* Vignette over the photo: ramps the light wall down to the
-              overlay's own background towards the rim, so what the mask fades
-              out is already page-dark and the circle has no visible edge. */}
+          {/* Vignette over the photo: a thin rim shade that settles the bright
+              wall onto the dark page. Deliberately shallow and late — pulled
+              any further in it stops being a vignette and turns the portrait
+              into a moon. */}
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0"
             style={{
               background:
-                "radial-gradient(closest-side, rgba(8,7,15,0) 34%, rgba(8,7,15,0.42) 72%, rgba(8,7,15,0.9) 100%)",
+                "radial-gradient(closest-side, rgba(8,7,15,0) 62%, rgba(8,7,15,0.2) 86%, rgba(8,7,15,0.6) 100%)",
             }}
           />
         </div>
